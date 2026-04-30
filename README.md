@@ -1,9 +1,9 @@
 
-# Getting Started with Swagger Petstore - OpenAPI 3.0
+# Getting Started with Swagger Petstore - OpenAPI 3.2
 
 ## Introduction
 
-This is a sample Pet Store Server based on the OpenAPI 3.0 specification.  You can find out more about
+This is a sample Pet Store Server based on the OpenAPI 3.2 specification.  You can find out more about
 Swagger at [https://swagger.io](https://swagger.io). In the third iteration of the pet store, we've switched to the design first approach!
 You can now help us improve the API whether it's by making changes to the definition itself or to the code.
 That way, with time, we can improve the API in general, and expose some of the new features in OAS3.
@@ -20,10 +20,10 @@ Find out more about Swagger: [https://swagger.io](https://swagger.io)
 Run the following command from your project directory to install the package from npm:
 
 ```bash
-npm install matic-cli@1.0.1
+npm install matic-cli@4.0.1
 ```
 
-For additional package details, see the [Npm page for the matic-cli@1.0.1 npm](https://www.npmjs.com/package/matic-cli/v/1.0.1).
+For additional package details, see the [Npm page for the matic-cli@4.0.1 npm](https://www.npmjs.com/package/matic-cli/v/4.0.1).
 
 ## Initialize the API Client
 
