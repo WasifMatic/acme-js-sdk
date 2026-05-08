@@ -30,6 +30,10 @@ async getInventory(
 ): Promise<ApiResponse<Record<string, number>>>
 ```
 
+## Authentication
+
+This endpoint requires [api_key](../../doc/auth/custom-header-signature.md)
+
 ## Parameters
 
 | Parameter | Type | Tags | Description |
@@ -37,6 +41,8 @@ async getInventory(
 | `requestOptions` | `RequestOptions \| undefined` | Optional | Pass additional request options. |
 
 ## Response Type
+
+**200**: successful operation
 
 This method returns an [`ApiResponse`](../../doc/api-response.md) instance. The `result` property of this instance returns the response data which is of type `Record<string, number>`.
 
@@ -105,6 +111,8 @@ async placeOrder(
 | `requestOptions` | `RequestOptions \| undefined` | Optional | Pass additional request options. |
 
 ## Response Type
+
+**200**: successful operation
 
 This method returns an [`ApiResponse`](../../doc/api-response.md) instance. The `result` property of this instance returns the response data which is of type [`Order`](../../doc/models/order.md).
 
@@ -176,6 +184,8 @@ async getOrderById(
 
 ## Response Type
 
+**200**: successful operation
+
 This method returns an [`ApiResponse`](../../doc/api-response.md) instance. The `result` property of this instance returns the response data which is of type [`Order`](../../doc/models/order.md).
 
 ## Example Usage
@@ -237,6 +247,8 @@ async deleteOrder(
 | `requestOptions` | `RequestOptions \| undefined` | Optional | Pass additional request options. |
 
 ## Response Type
+
+**200**: order deleted
 
 This method returns an [`ApiResponse`](../../doc/api-response.md) instance.
 

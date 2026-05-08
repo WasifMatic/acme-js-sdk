@@ -40,6 +40,10 @@ async updatePet(
 ): Promise<ApiResponse<Pet>>
 ```
 
+## Authentication
+
+This endpoint requires [petstore_auth](../../doc/auth/oauth-2-implicit-grant.md)
+
 ## Parameters
 
 | Parameter | Type | Tags | Description |
@@ -59,6 +63,8 @@ async updatePet(
 `read:pets`, `write:pets`
 
 ## Response Type
+
+**200**: Successful operation
 
 This method returns an [`ApiResponse`](../../doc/api-response.md) instance. The `result` property of this instance returns the response data which is of type [`Pet`](../../doc/models/pet.md).
 
@@ -136,6 +142,10 @@ async addPet(
 ): Promise<ApiResponse<Pet>>
 ```
 
+## Authentication
+
+This endpoint requires [petstore_auth](../../doc/auth/oauth-2-implicit-grant.md)
+
 ## Parameters
 
 | Parameter | Type | Tags | Description |
@@ -155,6 +165,8 @@ async addPet(
 `read:pets`, `write:pets`
 
 ## Response Type
+
+**200**: Successful operation
 
 This method returns an [`ApiResponse`](../../doc/api-response.md) instance. The `result` property of this instance returns the response data which is of type [`Pet`](../../doc/models/pet.md).
 
@@ -226,6 +238,10 @@ async findPetsByStatus(
 ): Promise<ApiResponse<Pet[]>>
 ```
 
+## Authentication
+
+This endpoint requires [petstore_auth](../../doc/auth/oauth-2-implicit-grant.md)
+
 ## Parameters
 
 | Parameter | Type | Tags | Description |
@@ -240,6 +256,8 @@ async findPetsByStatus(
 `read:pets`, `write:pets`
 
 ## Response Type
+
+**200**: successful operation
 
 This method returns an [`ApiResponse`](../../doc/api-response.md) instance. The `result` property of this instance returns the response data which is of type [`Pet[]`](../../doc/models/pet.md).
 
@@ -289,6 +307,10 @@ async findPetsByTags(
 ): Promise<ApiResponse<Pet[]>>
 ```
 
+## Authentication
+
+This endpoint requires [petstore_auth](../../doc/auth/oauth-2-implicit-grant.md)
+
 ## Parameters
 
 | Parameter | Type | Tags | Description |
@@ -303,6 +325,8 @@ async findPetsByTags(
 `read:pets`, `write:pets`
 
 ## Response Type
+
+**200**: successful operation
 
 This method returns an [`ApiResponse`](../../doc/api-response.md) instance. The `result` property of this instance returns the response data which is of type [`Pet[]`](../../doc/models/pet.md).
 
@@ -352,6 +376,10 @@ async getPetById(
 ): Promise<ApiResponse<Pet>>
 ```
 
+## Authentication
+
+This endpoint requires [api_key](../../doc/auth/custom-header-signature.md) **OR** [petstore_auth](../../doc/auth/oauth-2-implicit-grant.md)
+
 ## Parameters
 
 | Parameter | Type | Tags | Description |
@@ -366,6 +394,8 @@ async getPetById(
 `read:pets`, `write:pets`
 
 ## Response Type
+
+**200**: successful operation
 
 This method returns an [`ApiResponse`](../../doc/api-response.md) instance. The `result` property of this instance returns the response data which is of type [`Pet`](../../doc/models/pet.md).
 
@@ -420,6 +450,10 @@ async updatePetWithForm(
 ): Promise<ApiResponse<Pet>>
 ```
 
+## Authentication
+
+This endpoint requires [petstore_auth](../../doc/auth/oauth-2-implicit-grant.md)
+
 ## Parameters
 
 | Parameter | Type | Tags | Description |
@@ -436,6 +470,8 @@ async updatePetWithForm(
 `read:pets`, `write:pets`
 
 ## Response Type
+
+**200**: successful operation
 
 This method returns an [`ApiResponse`](../../doc/api-response.md) instance. The `result` property of this instance returns the response data which is of type [`Pet`](../../doc/models/pet.md).
 
@@ -488,6 +524,10 @@ async deletePet(
 ): Promise<ApiResponse<void>>
 ```
 
+## Authentication
+
+This endpoint requires [petstore_auth](../../doc/auth/oauth-2-implicit-grant.md)
+
 ## Parameters
 
 | Parameter | Type | Tags | Description |
@@ -503,6 +543,8 @@ async deletePet(
 `read:pets`, `write:pets`
 
 ## Response Type
+
+**200**: Pet deleted
 
 This method returns an [`ApiResponse`](../../doc/api-response.md) instance.
 
@@ -556,6 +598,10 @@ async uploadFile(
 ): Promise<ApiResponse<MApiResponse>>
 ```
 
+## Authentication
+
+This endpoint requires [petstore_auth](../../doc/auth/oauth-2-implicit-grant.md)
+
 ## Parameters
 
 | Parameter | Type | Tags | Description |
@@ -572,6 +618,8 @@ async uploadFile(
 `read:pets`, `write:pets`
 
 ## Response Type
+
+**200**: successful operation
 
 This method returns an [`ApiResponse`](../../doc/api-response.md) instance. The `result` property of this instance returns the response data which is of type [`MApiResponse`](../../doc/models/m-api-response.md).
 

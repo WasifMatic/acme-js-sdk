@@ -57,6 +57,8 @@ async createUser(
 
 ## Response Type
 
+**200**: successful operation
+
 This method returns an [`ApiResponse`](../../doc/api-response.md) instance. The `result` property of this instance returns the response data which is of type [`User`](../../doc/models/user.md).
 
 ## Example Usage
@@ -140,6 +142,8 @@ async createUsersWithListInput(
 
 ## Response Type
 
+**200**: Successful operation
+
 This method returns an [`ApiResponse`](../../doc/api-response.md) instance. The `result` property of this instance returns the response data which is of type [`User`](../../doc/models/user.md).
 
 ## Example Usage
@@ -205,6 +209,8 @@ async loginUser(
 
 ## Response Type
 
+**200**: successful operation
+
 This method returns an [`ApiResponse`](../../doc/api-response.md) instance. The `result` property of this instance returns the response data which is of type `string`.
 
 ## Example Usage
@@ -261,6 +267,8 @@ async logoutUser(
 | `requestOptions` | `RequestOptions \| undefined` | Optional | Pass additional request options. |
 
 ## Response Type
+
+**200**: successful operation
 
 This method returns an [`ApiResponse`](../../doc/api-response.md) instance.
 
@@ -319,6 +327,8 @@ async getUserByName(
 | `requestOptions` | `RequestOptions \| undefined` | Optional | Pass additional request options. |
 
 ## Response Type
+
+**200**: successful operation
 
 This method returns an [`ApiResponse`](../../doc/api-response.md) instance. The `result` property of this instance returns the response data which is of type [`User`](../../doc/models/user.md).
 
@@ -397,6 +407,8 @@ async updateUser(
 | `requestOptions` | `RequestOptions \| undefined` | Optional | Pass additional request options. |
 
 ## Response Type
+
+**200**: successful operation
 
 This method returns an [`ApiResponse`](../../doc/api-response.md) instance.
 
@@ -485,6 +497,8 @@ async deleteUser(
 | `requestOptions` | `RequestOptions \| undefined` | Optional | Pass additional request options. |
 
 ## Response Type
+
+**200**: User deleted
 
 This method returns an [`ApiResponse`](../../doc/api-response.md) instance.
 
