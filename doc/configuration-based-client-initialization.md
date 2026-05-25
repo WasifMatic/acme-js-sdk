@@ -42,14 +42,6 @@ const client = Client.fromJsonConfig(JSON.stringify(configModule.default));
 {
   "timeout": 30000,
   "environment": "production",
-  "petstoreAuthCredentials": {
-    "oauthClientId": "oauthclientid",
-    "oauthRedirectUri": "oauthredirecturi",
-    "oauthClockSkew": 0
-  },
-  "apiKeyCredentials": {
-    "apiKey": "api_key"
-  },
   "httpClientOptions": {
     "timeout": 30000,
     "retryConfig": {
@@ -68,43 +60,6 @@ const client = Client.fromJsonConfig(JSON.stringify(configModule.default));
         "username": "username",
         "password": "password"
       }
-    }
-  },
-  "logging": {
-    "logLevel": "info",
-    "maskSensitiveHeaders": true,
-    "logRequest": {
-      "logBody": true,
-      "logHeaders": true,
-      "includeQueryInPath": true,
-      "headersToInclude": [
-        "Content-Type",
-        "X-Request-ID"
-      ],
-      "headersToExclude": [
-        "Authorization"
-      ],
-      "headersToWhitelist": [
-        "X-Request-ID"
-      ]
-    },
-    "logResponse": {
-      "logBody": true,
-      "logHeaders": true,
-      "headersToInclude": [
-        "Content-Type",
-        "X-Correlation-ID",
-        "Date",
-        "Server"
-      ],
-      "headersToExclude": [
-        "Set-Cookie",
-        "Authorization",
-        "X-API-Key"
-      ],
-      "headersToWhitelist": [
-        "X-Correlation-ID"
-      ]
     }
   }
 }
