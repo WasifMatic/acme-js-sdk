@@ -10,21 +10,21 @@ Simple calculator API hosted on APIMATIC
 Run the following command from your project directory to install the package from npm:
 
 ```bash
-npm install matic-cli@1.7.0
+npm install matic-cli@1.13.0
 ```
 
-For additional package details, see the [Npm page for the matic-cli@1.7.0 npm](https://www.npmjs.com/package/matic-cli/v/1.7.0).
+For additional package details, see the [Npm page for the matic-cli@1.13.0 npm](https://www.npmjs.com/package/matic-cli/v/1.13.0).
 
 ## Initialize the API Client
 
-**_Note:_** Documentation for the client can be found [here.](https://www.github.com/WasifMatic/acme-js-sdk/tree/1.7.0/doc/client.md)
+**_Note:_** Documentation for the client can be found [here.](https://www.github.com/WasifMatic/acme-js-sdk/tree/1.13.0/doc/client.md)
 
 The following parameters are configurable for the API Client:
 
 | Parameter | Type | Description |
 |  --- | --- | --- |
 | timeout | `number` | Timeout for API calls.<br>*Default*: `0` |
-| httpClientOptions | [`Partial<HttpClientOptions>`](https://www.github.com/WasifMatic/acme-js-sdk/tree/1.7.0/doc/http-client-options.md) | Stable configurable http client options. |
+| httpClientOptions | [`Partial<HttpClientOptions>`](https://www.github.com/WasifMatic/acme-js-sdk/tree/1.13.0/doc/http-client-options.md) | Stable configurable http client options. |
 | unstableHttpClientOptions | `any` | Unstable configurable http client options. |
 
 The API client can be initialized as follows:
@@ -56,7 +56,7 @@ const fileContent = fs.readFileSync(absolutePath, 'utf-8');
 const client = Client.fromJsonConfig(fileContent);
 ```
 
-See the [Configuration-Based Client Initialization](https://www.github.com/WasifMatic/acme-js-sdk/tree/1.7.0/doc/configuration-based-client-initialization.md) section for details.
+See the [Configuration-Based Client Initialization](https://www.github.com/WasifMatic/acme-js-sdk/tree/1.13.0/doc/configuration-based-client-initialization.md) section for details.
 
 ### Environment-Based Client Initialization
 
@@ -78,28 +78,28 @@ if (fs.existsSync(absolutePath)) {
 const client = Client.fromEnvironment(process.env);
 ```
 
-See the [Environment-Based Client Initialization](https://www.github.com/WasifMatic/acme-js-sdk/tree/1.7.0/doc/environment-based-client-initialization.md) section for details.
+See the [Environment-Based Client Initialization](https://www.github.com/WasifMatic/acme-js-sdk/tree/1.13.0/doc/environment-based-client-initialization.md) section for details.
 
 ## List of APIs
 
-* [Simple Calculator](https://www.github.com/WasifMatic/acme-js-sdk/tree/1.7.0/doc/controllers/simple-calculator.md)
+* [Simple Calculator](https://www.github.com/WasifMatic/acme-js-sdk/tree/1.13.0/doc/controllers/simple-calculator.md)
 
 ## SDK Infrastructure
 
 ### Configuration
 
-* [HttpClientOptions](https://www.github.com/WasifMatic/acme-js-sdk/tree/1.7.0/doc/http-client-options.md)
-* [RetryConfiguration](https://www.github.com/WasifMatic/acme-js-sdk/tree/1.7.0/doc/retry-configuration.md)
-* [ProxySettings](https://www.github.com/WasifMatic/acme-js-sdk/tree/1.7.0/doc/proxy-settings.md)
-* [Configuration-Based Client Initialization](https://www.github.com/WasifMatic/acme-js-sdk/tree/1.7.0/doc/configuration-based-client-initialization.md)
-* [Environment-Based Client Initialization](https://www.github.com/WasifMatic/acme-js-sdk/tree/1.7.0/doc/environment-based-client-initialization.md)
+* [HttpClientOptions](https://www.github.com/WasifMatic/acme-js-sdk/tree/1.13.0/doc/http-client-options.md)
+* [RetryConfiguration](https://www.github.com/WasifMatic/acme-js-sdk/tree/1.13.0/doc/retry-configuration.md)
+* [ProxySettings](https://www.github.com/WasifMatic/acme-js-sdk/tree/1.13.0/doc/proxy-settings.md)
+* [Configuration-Based Client Initialization](https://www.github.com/WasifMatic/acme-js-sdk/tree/1.13.0/doc/configuration-based-client-initialization.md)
+* [Environment-Based Client Initialization](https://www.github.com/WasifMatic/acme-js-sdk/tree/1.13.0/doc/environment-based-client-initialization.md)
 
 ### HTTP
 
-* [HttpRequest](https://www.github.com/WasifMatic/acme-js-sdk/tree/1.7.0/doc/http-request.md)
+* [HttpRequest](https://www.github.com/WasifMatic/acme-js-sdk/tree/1.13.0/doc/http-request.md)
 
 ### Utilities
 
-* [ApiResponse](https://www.github.com/WasifMatic/acme-js-sdk/tree/1.7.0/doc/api-response.md)
-* [ApiError](https://www.github.com/WasifMatic/acme-js-sdk/tree/1.7.0/doc/api-error.md)
+* [ApiResponse](https://www.github.com/WasifMatic/acme-js-sdk/tree/1.13.0/doc/api-response.md)
+* [ApiError](https://www.github.com/WasifMatic/acme-js-sdk/tree/1.13.0/doc/api-error.md)
 
