@@ -1,5 +1,5 @@
 {
-  "version": "1.13.0",
+  "version": "7.0.0",
   "license": "MIT",
   "sideEffects": false,
   "main": "dist/cjs/index.js",
@@ -26,10 +26,11 @@
     "trailingComma": "es5",
     "quoteProps": "preserve"
   },
-  "name": "matic-cli",
-  "description": "Simple calculator API hosted on APIMATIC",
+  "name": "automated-package-publishing-sdk",
+  "description": "This is a sample Pet Store Server based on the OpenAPI 3.0 specification.  You can find out more about Swagger at [https://swagger.io](https://swagger.io). In the third iteration of the pet store, we've switched to the design first approach! You can now help us improve the API whether it's by making changes to the definition itself or to the code. That way, with time, we can improve the API in general, and expose some of the new features in OAS3.  Some useful links: - [The Pet Store repository](https://github.com/swagger-api/swagger-petstore) - [The source API definition for the Pet Store](https://github.com/swagger-api/swagger-petstore/blob/master/src/main/resources/openapi.yaml)",
   "author": {
-    "name": "CLI User"
+    "name": "CLI User",
+    "email": "apiteam@swagger.io"
   },
   "devDependencies": {
     "@types/jest": "^29.4.0",
@@ -46,14 +47,16 @@
     "@apimatic/authentication-adapters": "^0.5.14",
     "@apimatic/axios-client-adapter": "^0.3.20",
     "@apimatic/core": "^0.10.28",
-    "@apimatic/schema": "^0.7.21"
+    "@apimatic/oauth-adapters": "^0.4.18",
+    "@apimatic/schema": "^0.7.21",
+    "@apimatic/xml-adapter": "^0.3.8"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/WasifMatic/acme-js-sdk.git"
   },
   "bugs": {
-    "email": "support@apimatic.io"
+    "email": "apiteam@swagger.io"
   },
   "keywords": [],
   "contributors": [],

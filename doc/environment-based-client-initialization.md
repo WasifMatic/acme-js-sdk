@@ -13,7 +13,7 @@ The `fromEnvironment` method accepts an optional parameter for environment varia
 import * as dotenv from 'dotenv';
 import * as path from 'path';
 import * as fs from 'fs';
-import { Client, Configuration } from 'matic-cli';
+import { Client, Configuration } from 'automated-package-publishing-sdk';
 
 // Optional - Provide absolute path for the .env file
 const absolutePath = path.resolve('.env');
@@ -32,7 +32,7 @@ const client = Client.fromEnvironment(process.env);
 In browser environments, you can pass configuration values directly as key-value pairs to the `fromEnvironment` method.  Since `process.env` is not available in browsers, environment variables must be passed as an object.
 
 ```ts
-import { Client, Configuration } from 'matic-cli';
+import { Client, Configuration } from 'automated-package-publishing-sdk';
 
 const client = Client.fromEnvironment({
   TIMEOUT: '30000',
@@ -46,6 +46,12 @@ const client = Client.fromEnvironment({
 # Basic Configuration
 TIMEOUT=30000
 ENVIRONMENT=production
+
+# Authentication Credentials
+PETSTORE_AUTH_OAUTH_CLIENT_ID=oauthclientid
+PETSTORE_AUTH_OAUTH_REDIRECT_URI=oauthredirecturi
+PETSTORE_AUTH_OAUTH_CLOCK_SKEW=0
+API_KEY_API_KEY=api_key
 
 # Retry Configuration
 MAX_NUMBER_OF_RETRIES=3
@@ -61,5 +67,24 @@ PROXY_ADDRESS=http://localhost:3000
 PROXY_PORT=8080
 PROXY_AUTH_USERNAME=username
 PROXY_AUTH_PASSWORD=password
+
+# Logging
+LOG_LEVEL=info
+MASK_SENSITIVE_HEADERS=true
+
+# Request Logging
+REQUEST_LOG_BODY=true
+REQUEST_LOG_HEADERS=true
+REQUEST_INCLUDE_QUERY_IN_PATH=true
+REQUEST_HEADERS_TO_INCLUDE=Content-Type,X-Request-ID
+REQUEST_HEADERS_TO_EXCLUDE=Authorization
+REQUEST_HEADERS_TO_WHITELIST=X-Request-ID
+
+# Response Logging
+RESPONSE_LOG_BODY=true
+RESPONSE_LOG_HEADERS=true
+RESPONSE_HEADERS_TO_INCLUDE=Content-Type,X-Correlation-ID,Date,Server
+RESPONSE_HEADERS_TO_EXCLUDE=Set-Cookie,Authorization,X-API-Key
+RESPONSE_HEADERS_TO_WHITELIST=X-Correlation-ID
 ```
 

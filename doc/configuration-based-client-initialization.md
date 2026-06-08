@@ -10,7 +10,7 @@ In Node.js environments, you can use the `fs` module to read the configuration f
 ```ts
 import * as path from 'path';
 import * as fs from 'fs';
-import { Client } from 'matic-cli';
+import { Client } from 'automated-package-publishing-sdk';
 
 // Provide absolute path for the .env file
 const absolutePath = path.resolve('./config.json');
@@ -27,7 +27,7 @@ const client = Client.fromJsonConfig(fileContent);
 In browser environments, you can use the `import` function to load the configuration file.
 
 ```ts
-import { Client } from 'matic-cli';
+import { Client } from 'automated-package-publishing-sdk';
 
 // Load configuration using dynamic import
 const configModule = await import('./config.json', { assert: { type: 'json' } });
@@ -42,6 +42,14 @@ const client = Client.fromJsonConfig(JSON.stringify(configModule.default));
 {
   "timeout": 30000,
   "environment": "production",
+  "petstoreAuthCredentials": {
+    "oauthClientId": "oauthclientid",
+    "oauthRedirectUri": "oauthredirecturi",
+    "oauthClockSkew": 0
+  },
+  "apiKeyCredentials": {
+    "apiKey": "api_key"
+  },
   "httpClientOptions": {
     "timeout": 30000,
     "retryConfig": {
@@ -60,6 +68,43 @@ const client = Client.fromJsonConfig(JSON.stringify(configModule.default));
         "username": "username",
         "password": "password"
       }
+    }
+  },
+  "logging": {
+    "logLevel": "info",
+    "maskSensitiveHeaders": true,
+    "logRequest": {
+      "logBody": true,
+      "logHeaders": true,
+      "includeQueryInPath": true,
+      "headersToInclude": [
+        "Content-Type",
+        "X-Request-ID"
+      ],
+      "headersToExclude": [
+        "Authorization"
+      ],
+      "headersToWhitelist": [
+        "X-Request-ID"
+      ]
+    },
+    "logResponse": {
+      "logBody": true,
+      "logHeaders": true,
+      "headersToInclude": [
+        "Content-Type",
+        "X-Correlation-ID",
+        "Date",
+        "Server"
+      ],
+      "headersToExclude": [
+        "Set-Cookie",
+        "Authorization",
+        "X-API-Key"
+      ],
+      "headersToWhitelist": [
+        "X-Correlation-ID"
+      ]
     }
   }
 }
