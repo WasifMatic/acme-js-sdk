@@ -18,16 +18,18 @@ OAuth 2 Authorization endpoint response
 | `expiry` | `bigint \| undefined` | Optional | Time of token expiry as unix timestamp (UTC) |
 | `refreshToken` | `string \| undefined` | Optional | Refresh token<br>Used to get a new access token when it expires. |
 
-## Example (as JSON)
+## Example
 
-```json
-{
-  "access_token": "access_token4",
-  "token_type": "token_type6",
-  "expires_in": 74,
-  "scope": "scope6",
-  "expiry": 88,
-  "refresh_token": "refresh_token6"
-}
+```ts
+import { OauthToken } from 'automated-package-publishing-sdk';
+
+const oauthToken: OauthToken = {
+  accessToken: 'access_token8',
+  tokenType: 'token_type8',
+  expiresIn: BigInt(10),
+  scope: 'scope2',
+  expiry: BigInt(152),
+  refreshToken: 'refresh_token0',
+};
 ```
 

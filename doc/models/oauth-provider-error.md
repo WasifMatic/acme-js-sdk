@@ -18,16 +18,14 @@ OAuth 2 Authorization endpoint exception.
 | `errorUri` | `string \| undefined` | Optional | Gets or sets a URI identifying a human-readable web page with information about the error, used to provide the client developer with additional information about the error. |
 | `additionalProperties` | `Record<string, unknown \| undefined>` | Optional | - |
 
-## Example (as JSON)
+## Example
 
-```json
-{
-  "error": "unsupported_grant_type",
-  "error_description": "error_description8",
-  "error_uri": "error_uri8",
-  "exampleAdditionalProperty": {
-    "key1": "val1",
-    "key2": "val2"
+```ts
+try {
+  // make the API call
+} catch (error) {
+  if (error instanceof OauthProviderError) {
+    console.log(error.result);
   }
 }
 ```

@@ -19,39 +19,38 @@
 | `status` | [`PetStatus \| undefined`](../../doc/models/pet-status.md) | Optional | pet status in the store |
 | `additionalProperties` | `Record<string, unknown>` | Optional | - |
 
-## Example (as JSON)
+## Example
 
-```json
-{
-  "id": 120,
-  "name": "name0",
-  "category": {
-    "id": 232,
-    "name": "name2",
-    "exampleAdditionalProperty": {
-      "key1": "val1",
-      "key2": "val2"
-    }
+```ts
+import { Pet, PetStatus } from 'automated-package-publishing-sdk';
+
+const pet: Pet = {
+  name: 'name0',
+  photoUrls: [
+    'photoUrls5',
+    'photoUrls6'
+  ],
+  id: BigInt(72),
+  category: {
+    id: BigInt(232),
+    name: 'name2',
+    additionalProperties: {
+      'exampleAdditionalProperty': { 'key1': 'val1', 'key2': 'val2' }
+    },
   },
-  "photoUrls": [
-    "photoUrls5",
-    "photoUrls6"
-  ],
-  "tags": [
+  tags: [
     {
-      "id": 26,
-      "name": "name0",
-      "exampleAdditionalProperty": {
-        "key1": "val1",
-        "key2": "val2"
-      }
+      id: BigInt(26),
+      name: 'name0',
+      additionalProperties: {
+        'exampleAdditionalProperty': { 'key1': 'val1', 'key2': 'val2' }
+      },
     }
   ],
-  "status": "available",
-  "exampleAdditionalProperty": {
-    "key1": "val1",
-    "key2": "val2"
-  }
-}
+  status: PetStatus.Available,
+  additionalProperties: {
+    'exampleAdditionalProperty': { 'key1': 'val1', 'key2': 'val2' }
+  },
+};
 ```
 

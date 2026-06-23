@@ -15,16 +15,17 @@
 | `name` | `string \| undefined` | Optional | - |
 | `additionalProperties` | `Record<string, unknown>` | Optional | - |
 
-## Example (as JSON)
+## Example
 
-```json
-{
-  "id": 252,
-  "name": "name8",
-  "exampleAdditionalProperty": {
-    "key1": "val1",
-    "key2": "val2"
-  }
-}
+```ts
+import { Category } from 'automated-package-publishing-sdk';
+
+const category: Category = {
+  id: BigInt(232),
+  name: 'name2',
+  additionalProperties: {
+    'exampleAdditionalProperty': { 'key1': 'val1', 'key2': 'val2' }
+  },
+};
 ```
 

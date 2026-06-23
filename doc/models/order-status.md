@@ -17,7 +17,9 @@ Order Status
 
 ## Example
 
-```
-approved
+```ts
+import { OrderStatus } from 'automated-package-publishing-sdk';
+
+const orderStatus = OrderStatus.Approved;
 ```
 

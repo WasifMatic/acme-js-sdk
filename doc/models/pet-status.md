@@ -15,3 +15,11 @@ pet status in the store
 | `Pending` |
 | `Sold` |
 
+## Example
+
+```ts
+import { PetStatus } from 'automated-package-publishing-sdk';
+
+const petStatus = PetStatus.Pending;
+```
+

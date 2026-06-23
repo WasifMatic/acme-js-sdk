@@ -21,19 +21,20 @@
 | `userStatus` | `number \| undefined` | Optional | User Status |
 | `additionalProperties` | `Record<string, unknown>` | Optional | - |
 
-## Example (as JSON)
+## Example
 
-```json
-{
-  "id": 82,
-  "username": "username6",
-  "firstName": "firstName8",
-  "lastName": "lastName0",
-  "email": "email0",
-  "exampleAdditionalProperty": {
-    "key1": "val1",
-    "key2": "val2"
-  }
-}
+```ts
+import { User } from 'automated-package-publishing-sdk';
+
+const user: User = {
+  id: BigInt(76),
+  username: 'username0',
+  firstName: 'firstName4',
+  lastName: 'lastName4',
+  email: 'email6',
+  additionalProperties: {
+    'exampleAdditionalProperty': { 'key1': 'val1', 'key2': 'val2' }
+  },
+};
 ```
 

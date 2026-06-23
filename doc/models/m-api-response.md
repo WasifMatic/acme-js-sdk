@@ -16,17 +16,18 @@
 | `message` | `string \| undefined` | Optional | - |
 | `additionalProperties` | `Record<string, unknown>` | Optional | - |
 
-## Example (as JSON)
+## Example
 
-```json
-{
-  "code": 142,
-  "type": "type0",
-  "message": "message0",
-  "exampleAdditionalProperty": {
-    "key1": "val1",
-    "key2": "val2"
-  }
-}
+```ts
+import { MApiResponse } from 'automated-package-publishing-sdk';
+
+const apiResponse: MApiResponse = {
+  code: 146,
+  type: 'type4',
+  message: 'message4',
+  additionalProperties: {
+    'exampleAdditionalProperty': { 'key1': 'val1', 'key2': 'val2' }
+  },
+};
 ```
 
