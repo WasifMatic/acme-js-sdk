@@ -45,13 +45,12 @@ const client = Client.fromEnvironment({
 ```env
 # Basic Configuration
 TIMEOUT=30000
-ENVIRONMENT=production
+ENVIRONMENT=Sandbox
 
 # Authentication Credentials
-PETSTORE_AUTH_OAUTH_CLIENT_ID=oauthclientid
-PETSTORE_AUTH_OAUTH_REDIRECT_URI=oauthredirecturi
-PETSTORE_AUTH_OAUTH_CLOCK_SKEW=0
-API_KEY_API_KEY=api_key
+O_AUTH_CLIENT_ID=oauthclientid
+O_AUTH_CLIENT_SECRET=oauthclientsecret
+O_AUTH_CLOCK_SKEW=0
 
 # Retry Configuration
 MAX_NUMBER_OF_RETRIES=3

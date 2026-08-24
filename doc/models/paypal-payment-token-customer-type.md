@@ -1,0 +1,26 @@
+
+# Paypal Payment Token Customer Type
+
+The customer type associated with the PayPal payment token. This is to indicate whether the customer acting on the merchant / platform is either a business or a consumer., The customer type associated with a digital wallet payment token. This is to indicate whether the customer acting on the merchant / platform is either a business or a consumer.
+
+## Enumeration
+
+`PaypalPaymentTokenCustomerType`
+
+## Fields
+
+| Name | Description |
+|  --- | --- |
+| `Consumer` | The customer vaulting the PayPal payment token is a consumer on the merchant / platform. |
+| `Business` | The customer vaulting the PayPal payment token is a business on merchant / platform. |
+
+## Example
+
+```ts
+import {
+  PaypalPaymentTokenCustomerType,
+} from 'automated-package-publishing-sdk';
+
+const paypalPaymentTokenCustomerType = PaypalPaymentTokenCustomerType.Consumer;
+```
+

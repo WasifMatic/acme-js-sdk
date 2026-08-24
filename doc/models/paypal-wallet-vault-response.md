@@ -1,0 +1,48 @@
+
+# Paypal Wallet Vault Response
+
+The details about a saved PayPal Wallet payment source.
+
+## Structure
+
+`PaypalWalletVaultResponse`
+
+## Fields
+
+| Name | Type | Tags | Description |
+|  --- | --- | --- | --- |
+| `id` | `string \| undefined` | Optional | The PayPal-generated ID for the saved payment source.<br><br>**Constraints**: *Minimum Length*: `1`, *Maximum Length*: `255` |
+| `status` | [`PaypalWalletVaultStatus \| undefined`](../../doc/models/paypal-wallet-vault-status.md) | Optional | The vault status.<br><br>**Constraints**: *Minimum Length*: `1`, *Maximum Length*: `255`, *Pattern*: `^[0-9A-Z_]+$` |
+| `links` | [`LinkDescription[] \| undefined`](../../doc/models/link-description.md) | Optional, Read-only | An array of request-related HATEOAS links.<br><br>**Constraints**: *Minimum Items*: `1`, *Maximum Items*: `10` |
+| `customer` | [`PaypalWalletCustomer \| undefined`](../../doc/models/paypal-wallet-customer.md) | Optional | The details about a customer in PayPal's system of record. |
+
+## Example
+
+```ts
+import {
+  PaypalWalletVaultResponse,
+  PaypalWalletVaultStatus,
+  PhoneType,
+} from 'automated-package-publishing-sdk';
+
+const paypalWalletVaultResponse: PaypalWalletVaultResponse = {
+  id: 'id0',
+  status: PaypalWalletVaultStatus.Approved,
+  customer: {
+    id: 'id0',
+    emailAddress: 'email_address2',
+    phone: {
+      phoneNumber: {
+        nationalNumber: 'national_number6',
+      },
+      phoneType: PhoneType.Other,
+    },
+    name: {
+      givenName: 'given_name2',
+      surname: 'surname8',
+    },
+    merchantCustomerId: 'merchant_customer_id2',
+  },
+};
+```
+

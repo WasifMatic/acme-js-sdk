@@ -1,0 +1,50 @@
+
+# Amount with Breakdown
+
+The total order amount with an optional breakdown that provides details, such as the total item amount, total tax amount, shipping, handling, insurance, and discounts, if any. If you specify `amount.breakdown`, the amount equals `item_total` plus `tax_total` plus `shipping` plus `handling` plus `insurance` minus `shipping_discount` minus discount. The amount must be a positive number. For listed of supported currencies and decimal precision, see the PayPal REST APIs Currency Codes.
+
+## Structure
+
+`AmountWithBreakdown`
+
+## Fields
+
+| Name | Type | Tags | Description |
+|  --- | --- | --- | --- |
+| `currencyCode` | `string` | Required | The [three-character ISO-4217 currency code](https://developer.paypal.com/api/rest/reference/currency-codes/) that identifies the currency.<br><br>**Constraints**: *Minimum Length*: `3`, *Maximum Length*: `3` |
+| `value` | `string` | Required | The value, which might be: An integer for currencies like `JPY` that are not typically fractional. A decimal fraction for currencies like `TND` that are subdivided into thousandths. For the required number of decimal places for a currency code, see [Currency Codes](https://developer.paypal.com/api/rest/reference/currency-codes/).<br><br>**Constraints**: *Maximum Length*: `32`, *Pattern*: `^((-?[0-9]+)\|(-?([0-9]+)?[.][0-9]+))$` |
+| `breakdown` | [`AmountBreakdown \| undefined`](../../doc/models/amount-breakdown.md) | Optional | The breakdown of the amount. Breakdown provides details such as total item amount, total tax amount, shipping, handling, insurance, and discounts, if any. |
+
+## Example
+
+```ts
+import { AmountWithBreakdown } from 'automated-package-publishing-sdk';
+
+const amountWithBreakdown: AmountWithBreakdown = {
+  currencyCode: 'currency_code2',
+  value: 'value8',
+  breakdown: {
+    itemTotal: {
+      currencyCode: 'currency_code0',
+      value: 'value6',
+    },
+    shipping: {
+      currencyCode: 'currency_code0',
+      value: 'value6',
+    },
+    handling: {
+      currencyCode: 'currency_code2',
+      value: 'value8',
+    },
+    taxTotal: {
+      currencyCode: 'currency_code4',
+      value: 'value0',
+    },
+    insurance: {
+      currencyCode: 'currency_code2',
+      value: 'value8',
+    },
+  },
+};
+```
+

@@ -5,13 +5,12 @@ The following parameters are configurable for the API Client:
 
 | Parameter | Type | Description |
 |  --- | --- | --- |
-| environment | [`Environment`](../README.md#environments) | The API environment. <br> **Default: `Environment.Production`** |
-| timeout | `number` | Timeout for API calls.<br>*Default*: `30000` |
+| environment | [`Environment`](../README.md#environments) | The API environment. <br> **Default: `Environment.Sandbox`** |
+| timeout | `number` | Timeout for API calls.<br>*Default*: `0` |
 | httpClientOptions | [`Partial<HttpClientOptions>`](../doc/http-client-options.md) | Stable configurable http client options. |
 | unstableHttpClientOptions | `any` | Unstable configurable http client options. |
 | logging | [`PartialLoggingOptions`](../doc/partial-logging-options.md) | Logging Configuration to enable logging |
-| petstoreAuthCredentials | [`PetstoreAuthCredentials`](auth/oauth-2-implicit-grant.md) | The credential object for petstoreAuth |
-| apiKeyCredentials | [`ApiKeyCredentials`](auth/custom-header-signature.md) | The credential object for apiKey |
+| clientCredentialsAuthCredentials | [`ClientCredentialsAuthCredentials`](auth/oauth-2-client-credentials-grant.md) | The credential object for clientCredentialsAuth |
 
 The API client can be initialized as follows:
 
@@ -22,23 +21,15 @@ import {
   Client,
   Environment,
   LogLevel,
-  OauthScopePetstoreAuth,
 } from 'automated-package-publishing-sdk';
 
 const client = new Client({
-  petstoreAuthCredentials: {
-    oauthClientId: 'OAuthClientId',
-    oauthRedirectUri: 'OAuthRedirectUri',
-    oauthScopes: [
-      OauthScopePetstoreAuth.Writepets,
-      OauthScopePetstoreAuth.Readpets
-    ]
+  clientCredentialsAuthCredentials: {
+    oAuthClientId: 'OAuthClientId',
+    oAuthClientSecret: 'OAuthClientSecret'
   },
-  apiKeyCredentials: {
-    'api_key': 'api_key'
-  },
-  timeout: 30000,
-  environment: Environment.Production,
+  timeout: 0,
+  environment: Environment.Sandbox,
   logging: {
     logLevel: LogLevel.Info,
     logRequest: {

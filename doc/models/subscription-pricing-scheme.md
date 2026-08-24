@@ -1,0 +1,56 @@
+
+# Subscription Pricing Scheme
+
+The pricing scheme details.
+
+## Structure
+
+`SubscriptionPricingScheme`
+
+## Fields
+
+| Name | Type | Tags | Description |
+|  --- | --- | --- | --- |
+| `version` | `number \| undefined` | Optional, Read-only | The version of the pricing scheme.<br><br>**Constraints**: `>= 0`, `<= 999` |
+| `fixedPrice` | [`Money \| undefined`](../../doc/models/money.md) | Optional | The currency and amount for a financial transaction, such as a balance or payment due. |
+| `pricingModel` | [`SubscriptionPricingModel \| undefined`](../../doc/models/subscription-pricing-model.md) | Optional | The pricing model for tiered plan. The `tiers` parameter is required.<br><br>**Constraints**: *Minimum Length*: `1`, *Maximum Length*: `24`, *Pattern*: `^[A-Z_]+$` |
+| `tiers` | [`PricingTier[] \| undefined`](../../doc/models/pricing-tier.md) | Optional | An array of pricing tiers which are used for billing volume/tiered plans. pricing_model field has to be specified.<br><br>**Constraints**: *Minimum Items*: `1`, *Maximum Items*: `32` |
+| `createTime` | `string \| undefined` | Optional | The date and time, in [Internet date and time format](https://tools.ietf.org/html/rfc3339#section-5.6). Seconds are required while fractional seconds are optional. Note: The regular expression provides guidance but does not reject all invalid dates.<br><br>**Constraints**: *Minimum Length*: `20`, *Maximum Length*: `64`, *Pattern*: `^[0-9]{4}-(0[1-9]\|1[0-2])-(0[1-9]\|[1-2][0-9]\|3[0-1])[T,t]([0-1][0-9]\|2[0-3]):[0-5][0-9]:([0-5][0-9]\|60)([.][0-9]+)?([Zz]\|[+-][0-9]{2}:[0-9]{2})$` |
+| `updateTime` | `string \| undefined` | Optional | The date and time, in [Internet date and time format](https://tools.ietf.org/html/rfc3339#section-5.6). Seconds are required while fractional seconds are optional. Note: The regular expression provides guidance but does not reject all invalid dates.<br><br>**Constraints**: *Minimum Length*: `20`, *Maximum Length*: `64`, *Pattern*: `^[0-9]{4}-(0[1-9]\|1[0-2])-(0[1-9]\|[1-2][0-9]\|3[0-1])[T,t]([0-1][0-9]\|2[0-3]):[0-5][0-9]:([0-5][0-9]\|60)([.][0-9]+)?([Zz]\|[+-][0-9]{2}:[0-9]{2})$` |
+
+## Example
+
+```ts
+import {
+  SubscriptionPricingModel,
+  SubscriptionPricingScheme,
+} from 'automated-package-publishing-sdk';
+
+const subscriptionPricingScheme: SubscriptionPricingScheme = {
+  fixedPrice: {
+    currencyCode: 'currency_code4',
+    value: 'value0',
+  },
+  pricingModel: SubscriptionPricingModel.Volume,
+  tiers: [
+    {
+      startingQuantity: 'starting_quantity8',
+      amount: {
+        currencyCode: 'currency_code6',
+        value: 'value0',
+      },
+      endingQuantity: 'ending_quantity6',
+    },
+    {
+      startingQuantity: 'starting_quantity8',
+      amount: {
+        currencyCode: 'currency_code6',
+        value: 'value0',
+      },
+      endingQuantity: 'ending_quantity6',
+    }
+  ],
+  createTime: 'create_time2',
+};
+```
+

@@ -1,0 +1,27 @@
+
+# Card Verification Processor Response
+
+The processor response information for payment requests, such as direct credit card transactions.
+
+## Structure
+
+`CardVerificationProcessorResponse`
+
+## Fields
+
+| Name | Type | Tags | Description |
+|  --- | --- | --- | --- |
+| `avsCode` | [`AvsCode \| undefined`](../../doc/models/avs-code.md) | Optional, Read-only | The address verification code for Visa, Discover, Mastercard, or American Express transactions. |
+| `cvvCode` | [`CvvCode \| undefined`](../../doc/models/cvv-code.md) | Optional, Read-only | The card verification value code for for Visa, Discover, Mastercard, or American Express. |
+
+## Example
+
+```ts
+import {
+  CardVerificationProcessorResponse,
+} from 'automated-package-publishing-sdk';
+
+const cardVerificationProcessorResponse: CardVerificationProcessorResponse = {
+};
+```
+

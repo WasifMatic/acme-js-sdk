@@ -1,0 +1,72 @@
+
+# Subscriber Request
+
+The subscriber request information .
+
+## Structure
+
+`SubscriberRequest`
+
+## Fields
+
+| Name | Type | Tags | Description |
+|  --- | --- | --- | --- |
+| `emailAddress` | `string \| undefined` | Optional | The internationalized email address. Note: Up to 64 characters are allowed before and 255 characters are allowed after the @ sign. However, the generally accepted maximum length for an email address is 254 characters. The pattern verifies that an unquoted @ sign exists.<br><br>**Constraints**: *Minimum Length*: `3`, *Maximum Length*: `254`, *Pattern*: ``(?:[a-zA-Z0-9!#$%&'*+/=?^_`{\|}~-]+(?:\.[a-zA-Z0-9!#$%&'*+/=?^_`{\|}~-]+)*\|(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]\|\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\|\[(?:(?:(2(5[0-5]\|[0-4][0-9])\|1[0-9][0-9]\|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]\|[0-4][0-9])\|1[0-9][0-9]\|[1-9]?[0-9])\|[a-zA-Z0-9-]*[a-zA-Z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]\|\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])`` |
+| `payerId` | `string \| undefined` | Optional | The account identifier for a PayPal account.<br><br>**Constraints**: *Minimum Length*: `13`, *Maximum Length*: `13`, *Pattern*: `^[2-9A-HJ-NP-Z]{13}$` |
+| `name` | [`Name \| undefined`](../../doc/models/name.md) | Optional | The name of the party. |
+| `shippingAddress` | [`ShippingDetails \| undefined`](../../doc/models/shipping-details.md) | Optional | The shipping details. |
+| `paymentSource` | [`SubscriptionPaymentSource \| undefined`](../../doc/models/subscription-payment-source.md) | Optional | The payment source definition. To be eligible to create subscription using debit or credit card, you will need to sign up here (https://www.paypal.com/bizsignup/entry/product/ppcp). Please note, its available only for non-3DS cards and for merchants in US and AU regions. |
+| `phone` | [`PhoneWithType \| undefined`](../../doc/models/phone-with-type.md) | Optional | The phone information. |
+
+## Example
+
+```ts
+import {
+  CardType,
+  FulfillmentType,
+  ShippingType,
+  SubscriberRequest,
+} from 'automated-package-publishing-sdk';
+
+const subscriberRequest: SubscriberRequest = {
+  emailAddress: 'email_address4',
+  payerId: 'payer_id4',
+  name: {
+    givenName: 'given_name2',
+    surname: 'surname8',
+  },
+  shippingAddress: {
+    name: {
+      fullName: 'full_name6',
+    },
+    emailAddress: 'email_address8',
+    phoneNumber: {
+      countryCode: 'country_code2',
+      nationalNumber: 'national_number6',
+    },
+    type: FulfillmentType.PickupInStore,
+    options: [
+      {
+        id: 'id2',
+        label: 'label2',
+        selected: false,
+        type: ShippingType.Shipping,
+        amount: {
+          currencyCode: 'currency_code6',
+          value: 'value0',
+        },
+      }
+    ],
+  },
+  paymentSource: {
+    card: {
+      name: 'name6',
+      number: 'number6',
+      expiry: 'expiry4',
+      securityCode: 'security_code8',
+      type: CardType.Unknown,
+    },
+  },
+};
+```
+

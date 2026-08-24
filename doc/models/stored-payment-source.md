@@ -1,0 +1,42 @@
+
+# Stored Payment Source
+
+Provides additional details to process a payment using a `payment_source` that has been stored or is intended to be stored (also referred to as stored_credential or card-on-file). Parameter compatibility: `payment_type=ONE_TIME` is compatible only with `payment_initiator=CUSTOMER`. `usage=FIRST` is compatible only with `payment_initiator=CUSTOMER`. `previous_transaction_reference` or `previous_network_transaction_reference` is compatible only with `payment_initiator=MERCHANT`. Only one of the parameters - `previous_transaction_reference` and `previous_network_transaction_reference` - can be present in the request.
+
+## Structure
+
+`StoredPaymentSource`
+
+## Fields
+
+| Name | Type | Tags | Description |
+|  --- | --- | --- | --- |
+| `paymentInitiator` | [`PaymentInitiator`](../../doc/models/payment-initiator.md) | Required | The person or party who initiated or triggered the payment.<br><br>**Constraints**: *Minimum Length*: `1`, *Maximum Length*: `255`, *Pattern*: `^[0-9A-Z_]+$` |
+| `paymentType` | [`StoredPaymentSourcePaymentType`](../../doc/models/stored-payment-source-payment-type.md) | Required | Indicates the type of the stored payment_source payment.<br><br>**Constraints**: *Minimum Length*: `1`, *Maximum Length*: `255`, *Pattern*: `^[0-9A-Z_]+$` |
+| `usage` | [`StoredPaymentSourceUsageType \| undefined`](../../doc/models/stored-payment-source-usage-type.md) | Optional | Indicates if this is a `first` or `subsequent` payment using a stored payment source (also referred to as stored credential or card on file).<br><br>**Default**: `StoredPaymentSourceUsageType.Derived`<br><br>**Constraints**: *Minimum Length*: `1`, *Maximum Length*: `255`, *Pattern*: `^[0-9A-Z_]+$` |
+| `previousNetworkTransactionReference` | [`NetworkTransaction \| undefined`](../../doc/models/network-transaction.md) | Optional | Reference values used by the card network to identify a transaction. |
+
+## Example
+
+```ts
+import {
+  CardBrand,
+  PaymentInitiator,
+  StoredPaymentSource,
+  StoredPaymentSourcePaymentType,
+  StoredPaymentSourceUsageType,
+} from 'automated-package-publishing-sdk';
+
+const storedPaymentSource: StoredPaymentSource = {
+  paymentInitiator: PaymentInitiator.Customer,
+  paymentType: StoredPaymentSourcePaymentType.OneTime,
+  usage: StoredPaymentSourceUsageType.Derived,
+  previousNetworkTransactionReference: {
+    id: 'id6',
+    date: 'date2',
+    network: CardBrand.Confidis,
+    acquirerReferenceNumber: 'acquirer_reference_number8',
+  },
+};
+```
+

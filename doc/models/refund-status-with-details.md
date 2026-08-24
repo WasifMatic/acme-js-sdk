@@ -1,0 +1,31 @@
+
+# Refund Status with Details
+
+The refund status with details.
+
+## Structure
+
+`RefundStatusWithDetails`
+
+## Fields
+
+| Name | Type | Tags | Description |
+|  --- | --- | --- | --- |
+| `status` | [`RefundStatus \| undefined`](../../doc/models/refund-status.md) | Optional, Read-only | The status of the refund. |
+| `statusDetails` | [`RefundStatusDetails \| undefined`](../../doc/models/refund-status-details.md) | Optional | The details of the refund status. |
+
+## Example
+
+```ts
+import {
+  RefundIncompleteReason,
+  RefundStatusWithDetails,
+} from 'automated-package-publishing-sdk';
+
+const refundStatusWithDetails: RefundStatusWithDetails = {
+  statusDetails: {
+    reason: RefundIncompleteReason.Echeck,
+  },
+};
+```
+

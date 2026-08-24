@@ -1,29 +1,31 @@
 
-# Getting Started with Swagger Petstore - OpenAPI 3.0
+# Getting Started with PayPal Server SDK
 
 ## Introduction
 
-This is a sample Pet Store Server based on the OpenAPI 3.0 specification.  You can find out more about
-Swagger at [https://swagger.io](https://swagger.io). In the third iteration of the pet store, we've switched to the design first approach!
-You can now help us improve the API whether it's by making changes to the definition itself or to the code.
-That way, with time, we can improve the API in general, and expose some of the new features in OAS3.
+### Important Notes
 
-Some useful links:
+- **Available Features:** This SDK currently contains only 5 of PayPal's API endpoints. Additional endpoints and functionality will be added in the future.
 
-- [The Pet Store repository](https://github.com/swagger-api/swagger-petstore)
-- [The source API definition for the Pet Store](https://github.com/swagger-api/swagger-petstore/blob/master/src/main/resources/openapi.yaml)
+### Information
 
-Find out more about Swagger: [https://swagger.io](https://swagger.io)
+The PayPal Server SDK provides integration access to the PayPal REST APIs. The API endpoints are divided into distinct controllers:
+
+- Orders Controller: [Orders API v2](https://developer.paypal.com/docs/api/orders/v2/)
+- Payments Controller: [Payments API v2](https://developer.paypal.com/docs/api/payments/v2)
+- Vault Controller: [Payment Method Tokens API v3](https://developer.paypal.com/docs/api/payment-tokens/v3/) *Available in the US only.*
+- Transaction Search Controller: [Transaction Search API v1](https://developer.paypal.com/docs/api/transaction-search/v1/)
+- Subscriptions Controller: [Subscriptions API v1](https://developer.paypal.com/docs/api/subscriptions/v1/)
 
 ## Install the Package
 
 Run the following command from your project directory to install the package from npm:
 
 ```bash
-npm install automated-package-publishing-sdk@4.0.1
+npm install automated-package-publishing-sdk@10.0.2
 ```
 
-For additional package details, see the [Npm page for the automated-package-publishing-sdk@4.0.1 npm](https://www.npmjs.com/package/automated-package-publishing-sdk/v/4.0.1).
+For additional package details, see the [Npm page for the automated-package-publishing-sdk@10.0.2 npm](https://www.npmjs.com/package/automated-package-publishing-sdk/v/10.0.2).
 
 ## Initialize the API Client
 
@@ -33,13 +35,12 @@ The following parameters are configurable for the API Client:
 
 | Parameter | Type | Description |
 |  --- | --- | --- |
-| environment | [`Environment`](README.md#environments) | The API environment. <br> **Default: `Environment.Production`** |
-| timeout | `number` | Timeout for API calls.<br>*Default*: `30000` |
+| environment | [`Environment`](README.md#environments) | The API environment. <br> **Default: `Environment.Sandbox`** |
+| timeout | `number` | Timeout for API calls.<br>*Default*: `0` |
 | httpClientOptions | [`Partial<HttpClientOptions>`](doc/http-client-options.md) | Stable configurable http client options. |
 | unstableHttpClientOptions | `any` | Unstable configurable http client options. |
 | logging | [`PartialLoggingOptions`](doc/partial-logging-options.md) | Logging Configuration to enable logging |
-| petstoreAuthCredentials | [`PetstoreAuthCredentials`](doc/auth/oauth-2-implicit-grant.md) | The credential object for petstoreAuth |
-| apiKeyCredentials | [`ApiKeyCredentials`](doc/auth/custom-header-signature.md) | The credential object for apiKey |
+| clientCredentialsAuthCredentials | [`ClientCredentialsAuthCredentials`](doc/auth/oauth-2-client-credentials-grant.md) | The credential object for clientCredentialsAuth |
 
 The API client can be initialized as follows:
 
@@ -50,23 +51,15 @@ import {
   Client,
   Environment,
   LogLevel,
-  OauthScopePetstoreAuth,
 } from 'automated-package-publishing-sdk';
 
 const client = new Client({
-  petstoreAuthCredentials: {
-    oauthClientId: 'OAuthClientId',
-    oauthRedirectUri: 'OAuthRedirectUri',
-    oauthScopes: [
-      OauthScopePetstoreAuth.Writepets,
-      OauthScopePetstoreAuth.Readpets
-    ]
+  clientCredentialsAuthCredentials: {
+    oAuthClientId: 'OAuthClientId',
+    oAuthClientSecret: 'OAuthClientSecret'
   },
-  apiKeyCredentials: {
-    'api_key': 'api_key'
-  },
-  timeout: 30000,
-  environment: Environment.Production,
+  timeout: 0,
+  environment: Environment.Sandbox,
   logging: {
     logLevel: LogLevel.Info,
     logRequest: {
@@ -128,20 +121,21 @@ The SDK can be configured to use a different environment for making API calls. A
 
 | Name | Description |
 |  --- | --- |
-| Production | **Default** |
+| Sandbox | **Default** PayPal Sandbox Environment |
 
 ## Authorization
 
 This API uses the following authentication schemes.
 
-* [`petstore_auth (OAuth 2 Implicit Grant)`](doc/auth/oauth-2-implicit-grant.md)
-* [`api_key (Custom Header Signature)`](doc/auth/custom-header-signature.md)
+* [`Oauth2 (OAuth 2 Client Credentials Grant)`](doc/auth/oauth-2-client-credentials-grant.md)
 
 ## List of APIs
 
-* [Pet](doc/controllers/pet.md)
-* [Store](doc/controllers/store.md)
-* [User](doc/controllers/user.md)
+* [Orders](doc/controllers/orders.md)
+* [Payments](doc/controllers/payments.md)
+* [Vault](doc/controllers/vault.md)
+* [Transaction Search](doc/controllers/transaction-search.md)
+* [Subscriptions](doc/controllers/subscriptions.md)
 
 ## SDK Infrastructure
 
