@@ -10,7 +10,7 @@ In Node.js environments, you can use the `fs` module to read the configuration f
 ```ts
 import * as path from 'path';
 import * as fs from 'fs';
-import { Client } from 'calc-matic';
+import { Client } from 'automated-package-publishing-sdk';
 
 // Provide absolute path for the .env file
 const absolutePath = path.resolve('./config.json');
@@ -27,7 +27,7 @@ const client = Client.fromJsonConfig(fileContent);
 In browser environments, you can use the `import` function to load the configuration file.
 
 ```ts
-import { Client } from 'calc-matic';
+import { Client } from 'automated-package-publishing-sdk';
 
 // Load configuration using dynamic import
 const configModule = await import('./config.json', { assert: { type: 'json' } });

@@ -1,5 +1,5 @@
 {
-  "version": "1.1.1",
+  "version": "9.0.9",
   "license": "MIT",
   "sideEffects": false,
   "main": "dist/cjs/index.js",
@@ -26,7 +26,7 @@
     "trailingComma": "es5",
     "quoteProps": "preserve"
   },
-  "name": "calc-matic",
+  "name": "automated-package-publishing-sdk",
   "description": "Simple calculator API hosted on APIMATIC",
   "author": {
     "name": "CLI User"
