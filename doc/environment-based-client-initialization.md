@@ -45,12 +45,7 @@ const client = Client.fromEnvironment({
 ```env
 # Basic Configuration
 TIMEOUT=30000
-ENVIRONMENT=Sandbox
-
-# Authentication Credentials
-O_AUTH_CLIENT_ID=oauthclientid
-O_AUTH_CLIENT_SECRET=oauthclientsecret
-O_AUTH_CLOCK_SKEW=0
+ENVIRONMENT=production
 
 # Retry Configuration
 MAX_NUMBER_OF_RETRIES=3
@@ -66,24 +61,5 @@ PROXY_ADDRESS=http://localhost:3000
 PROXY_PORT=8080
 PROXY_AUTH_USERNAME=username
 PROXY_AUTH_PASSWORD=password
-
-# Logging
-LOG_LEVEL=info
-MASK_SENSITIVE_HEADERS=true
-
-# Request Logging
-REQUEST_LOG_BODY=true
-REQUEST_LOG_HEADERS=true
-REQUEST_INCLUDE_QUERY_IN_PATH=true
-REQUEST_HEADERS_TO_INCLUDE=Content-Type,X-Request-ID
-REQUEST_HEADERS_TO_EXCLUDE=Authorization
-REQUEST_HEADERS_TO_WHITELIST=X-Request-ID
-
-# Response Logging
-RESPONSE_LOG_BODY=true
-RESPONSE_LOG_HEADERS=true
-RESPONSE_HEADERS_TO_INCLUDE=Content-Type,X-Correlation-ID,Date,Server
-RESPONSE_HEADERS_TO_EXCLUDE=Set-Cookie,Authorization,X-API-Key
-RESPONSE_HEADERS_TO_WHITELIST=X-Correlation-ID
 ```
 
