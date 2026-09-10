@@ -13,7 +13,7 @@ The `fromEnvironment` method accepts an optional parameter for environment varia
 import * as dotenv from 'dotenv';
 import * as path from 'path';
 import * as fs from 'fs';
-import { Client, Configuration } from 'automated-package-publishing-sdk';
+import { Client, Configuration } from 'calc-matic';
 
 // Optional - Provide absolute path for the .env file
 const absolutePath = path.resolve('.env');
@@ -32,7 +32,7 @@ const client = Client.fromEnvironment(process.env);
 In browser environments, you can pass configuration values directly as key-value pairs to the `fromEnvironment` method.  Since `process.env` is not available in browsers, environment variables must be passed as an object.
 
 ```ts
-import { Client, Configuration } from 'automated-package-publishing-sdk';
+import { Client, Configuration } from 'calc-matic';
 
 const client = Client.fromEnvironment({
   TIMEOUT: '30000',

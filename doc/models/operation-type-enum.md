@@ -19,7 +19,7 @@ Possible operators are sum, subtract, multiply, divide
 ## Example
 
 ```ts
-import { OperationTypeEnum } from 'automated-package-publishing-sdk';
+import { OperationTypeEnum } from 'calc-matic';
 
 const operationType = OperationTypeEnum.SUM;
 ```
