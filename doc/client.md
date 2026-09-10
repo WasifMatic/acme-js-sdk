@@ -5,19 +5,49 @@ The following parameters are configurable for the API Client:
 
 | Parameter | Type | Description |
 |  --- | --- | --- |
-| timeout | `number` | Timeout for API calls.<br>*Default*: `0` |
+| environment | [`Environment`](../README.md#environments) | The API environment. <br> **Default: `Environment.Production`** |
+| timeout | `number` | Timeout for API calls.<br>*Default*: `30000` |
 | httpClientOptions | [`Partial<HttpClientOptions>`](../doc/http-client-options.md) | Stable configurable http client options. |
 | unstableHttpClientOptions | `any` | Unstable configurable http client options. |
+| logging | [`PartialLoggingOptions`](../doc/partial-logging-options.md) | Logging Configuration to enable logging |
+| petstoreAuthCredentials | [`PetstoreAuthCredentials`](auth/oauth-2-implicit-grant.md) | The credential object for petstoreAuth |
+| apiKeyCredentials | [`ApiKeyCredentials`](auth/custom-header-signature.md) | The credential object for apiKey |
 
 The API client can be initialized as follows:
 
 ## Code-Based Client Initialization
 
 ```ts
-import { Client } from 'automated-package-publishing-sdk';
+import {
+  Client,
+  Environment,
+  LogLevel,
+  OauthScopePetstoreAuth,
+} from 'automated-package-publishing-sdk';
 
 const client = new Client({
-  timeout: 0,
+  petstoreAuthCredentials: {
+    oauthClientId: 'OAuthClientId',
+    oauthRedirectUri: 'OAuthRedirectUri',
+    oauthScopes: [
+      OauthScopePetstoreAuth.Writepets,
+      OauthScopePetstoreAuth.Readpets
+    ]
+  },
+  apiKeyCredentials: {
+    'api_key': 'api_key'
+  },
+  timeout: 30000,
+  environment: Environment.Production,
+  logging: {
+    logLevel: LogLevel.Info,
+    logRequest: {
+      logBody: true
+    },
+    logResponse: {
+      logHeaders: true
+    }
+  },
 });
 ```
 
