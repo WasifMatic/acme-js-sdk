@@ -1,10 +1,7 @@
 export { SwaggerPetstoreOpenApi30Client } from "./client.js";
-export { DEFAULT_CLIENT_OPTIONS, type ClientOptions } from "./client-options.js";
+export type { ClientOptions } from "./client-options.js";
 
 export type { TokenProvider } from "./core/auth/credentials.js";
-
-export { ServerEnvironment, DEFAULT_SERVER_OPTIONS } from "./servers.js";
-export type { ServerOptions, DefaultServerOptions, AuthServerServerOptions } from "./servers.js";
 
 export { PetApi } from "./resources/pet-api.js";
 export { Store } from "./resources/store.js";
@@ -21,17 +18,19 @@ export { userSchema, type User } from "./models/user.js";
 
 export {
   CoreError as SwaggerPetstoreOpenApi30Error,
+  ResponseError,
+  DecodeError,
+  EncodeError,
   ConnectionError,
   TimeoutError,
-  AbortError,
-  SdkError,
   AuthError,
+  ConfigurationError,
 } from "./core/errors.js";
-export { ResponseError } from "./core/response-error.js";
+export { ApiError } from "./core/api-error.js";
 export { SchemaError } from "./core/validation/schema-error.js";
 export type { ApiPromise, ApiResult } from "./core/api-promise.js";
-export type { RequestOptions } from "./core/api-request.js";
+export type { HttpMethod, RequestOptions } from "./core/api-request.js";
 export type { BinaryContent, BinaryData, BinaryErrorContent, FileData, FileInput } from "./core/binary.js";
 export type { ErrorKind } from "./core/errors.js";
-export type { ErrorPayload, Declared, Undeclared } from "./core/response-error.js";
+export type { ErrorPayload, Declared, Undeclared } from "./core/api-error.js";
 export type { Schema, EnumSchema, Encoded } from "./core/validation/schema.js";

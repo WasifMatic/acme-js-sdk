@@ -1,4 +1,5 @@
-import { AbortError, TimeoutError } from "./errors.js";
+import type { HttpMethod } from "./api-request.js";
+import { TimeoutError } from "./errors.js";
 
 export type RequestDeadline = {
   readonly signal: AbortSignal;
@@ -6,17 +7,26 @@ export type RequestDeadline = {
   settle(): void;
 };
 
-export function startDeadline(timeoutMs: number, callerSignal: AbortSignal | undefined): RequestDeadline {
+export function startDeadline(
+  timeoutMs: number,
+  callerSignal: AbortSignal | undefined,
+  method: HttpMethod,
+  uri: () => string,
+): RequestDeadline {
   const controller = new AbortController();
-  const onCallerAbort = (): void =>
-    controller.abort(
-      new AbortError({ message: "Request was aborted by the caller.", cause: callerSignal?.reason }),
-    );
+  const onCallerAbort = (): void => controller.abort(callerSignal?.reason);
   callerSignal?.addEventListener("abort", onCallerAbort, { once: true });
   if (callerSignal?.aborted) onCallerAbort();
 
   const timer = setTimeout(
-    () => controller.abort(new TimeoutError({ message: `Request timed out after ${timeoutMs}ms.` })),
+    () =>
+      controller.abort(
+        new TimeoutError(`${method} ${uri()} failed: Request timed out after ${timeoutMs}ms.`, {
+          method,
+          uri: uri(),
+          timeout: timeoutMs,
+        }),
+      ),
     timeoutMs,
   );
 

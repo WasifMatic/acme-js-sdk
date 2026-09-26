@@ -1,18 +1,20 @@
-import type { FetchLike } from "./core/api-request.js";
 import type { TokenProvider } from "./core/auth/credentials.js";
-import { ServerEnvironment, type ServerOptions } from "./servers.js";
+import type { CoreClientOptions } from "./core/client-options.js";
 
-export type ClientOptions = {
-  readonly serverEnvironment: ServerEnvironment;
-  readonly serverOptions: ServerOptions;
-  readonly timeout: number;
-  readonly fetch?: FetchLike | undefined;
+export type ClientOptions = SdkClientOptions & Partial<CoreClientOptions>;
+
+type SdkClientOptions = ServerOptions & {
   readonly petstoreAuth?: TokenProvider | undefined;
   readonly apiKey?: TokenProvider | undefined;
 };
 
-export const DEFAULT_CLIENT_OPTIONS: ClientOptions = {
-  serverEnvironment: ServerEnvironment.Production,
-  serverOptions: {},
-  timeout: 60_000,
+type ServerOptions = {
+  readonly serverOptions?: {
+    default?: {
+      baseUrl?: string;
+    };
+    authServer?: {
+      baseUrl?: string;
+    };
+  };
 };

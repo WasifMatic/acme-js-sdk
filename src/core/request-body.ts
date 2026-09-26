@@ -7,7 +7,6 @@ import {
   type FileInput,
   type ResolvedFile,
 } from "./binary.js";
-import { SdkError } from "./errors.js";
 import type { Param, ParamValue, StyledParam } from "./param-value.js";
 import { flattenParams, isScalar, jsonValue, scalar } from "./param-value.js";
 import { formString } from "./params.js";
@@ -106,7 +105,7 @@ export function buildBody(body: RequestBody, signal?: AbortSignal): BodyContent 
 
 function unknownBodyKind(body: never): never {
   const kind = (body as { kind?: unknown }).kind;
-  throw new SdkError({ message: `Unsupported request body kind: ${String(kind)}` });
+  throw new TypeError(`Unsupported request body kind: ${String(kind)}`);
 }
 
 function buildFormUrlEncoded(body: FormUrlEncodedBody): BodyContent {
@@ -254,5 +253,5 @@ function partContentType(type: string | undefined): string {
 
 function unknownPartKind(part: never): never {
   const kind = (part as { kind?: unknown }).kind;
-  throw new SdkError({ message: `Unsupported multipart part kind: ${String(kind)}` });
+  throw new TypeError(`Unsupported multipart part kind: ${String(kind)}`);
 }

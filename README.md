@@ -30,31 +30,27 @@ npm install <path-to-sdk>
 
 ## Quick Start
 
-### Your first call
-
 Create one client and reuse it. Configure its behaviour through [ClientOptions](src/client-options.ts).
 
 ```ts
-import { ServerEnvironment, SwaggerPetstoreOpenApi30Client } from "automated-package-publishing-sdk";
+import { SwaggerPetstoreOpenApi30Client } from "swagger-petstore-open-api-3-0";
 
 const client = new SwaggerPetstoreOpenApi30Client({
-  serverEnvironment: ServerEnvironment.Production,
   petstoreAuth: "YOUR_API_KEY",
   apiKey: "YOUR_API_KEY",
 });
 ```
 
-Every option has a default — see `DEFAULT_CLIENT_OPTIONS` in the same module. `serverEnvironment` is spelled out above so the environment a call reaches is visible where the client is built rather than inherited silently.
+Nothing in `ClientOptions` is required — `new SwaggerPetstoreOpenApi30Client()` compiles — and each option left out falls back to its default. This API declares one environment, so there is no environment to select and no host to state at the construction site.
 
 ### From CommonJS
 
 The package ships both dialects from a single entry, so `require` works with full types. In a TypeScript CommonJS file use the `import ... = require(...)` form — a plain destructuring `require` runs fine but gives you `any`.
 
 ```ts
-import sdk = require("automated-package-publishing-sdk");
+import sdk = require("swagger-petstore-open-api-3-0");
 
 const client = new sdk.SwaggerPetstoreOpenApi30Client({
-  serverEnvironment: sdk.ServerEnvironment.Production,
   petstoreAuth: "YOUR_API_KEY",
   apiKey: "YOUR_API_KEY",
 });
@@ -74,12 +70,12 @@ This SDK ships a generated **SDK map** — [`sdk-map.md`](sdk-map.md) plus the p
 
 **Read it before scanning the source.** Whether you are an AI coding assistant or searching by hand, the map answers "what is the exact …" by lookup for every call-level contract, and for anything it does not carry it names the one file that does:
 
-- **[`sdk-map.md`](sdk-map.md)** — the index: client construction, the two error families, the non-throwing `.asApiResult()` form, servers, environments and auth, the model locator, the runtime facts, and the SDK-wide defaults every operation relies on.
+- **[`sdk-map.md`](sdk-map.md)** — the index: client construction, the one error family, the non-throwing `.asApiResult()` form, servers, environments and auth, the model locator, the runtime facts, and the SDK-wide defaults every operation relies on.
 - **[`map/operations/`](map/operations/pet-api.md)** — one page per resource: the exact signature and return type, the verb and route, the request body and its media type, a **Fields** table giving every request field its channel, and a **Type sources** table naming the file and schema value of every type the operation mentions.
 
 Model shapes — object properties with their wire names, enum member names and wire values, union variants — are **not** duplicated in the map, and not in the API reference either. Both name the type and the file to read; take the pair from the operation's **Type sources** table and read the declaring file. That file is the single source of truth and cannot go stale against the code.
 
-**Each operation block states only what is specific to it.** The SDK-wide defaults are stated once in [`sdk-map.md`](sdk-map.md) — the call shape, the base `ResponseError`, the default server group — and a block departs from one only by saying so, so a block silent on a point is telling you the default applies. Take it and move on rather than opening the source to confirm.
+**Each operation block states only what is specific to it.** The SDK-wide defaults are stated once in [`sdk-map.md`](sdk-map.md) — the call shape, the base `ApiError`, the default server group — and a block departs from one only by saying so, so a block silent on a point is telling you the default applies. Take it and move on rather than opening the source to confirm.
 
 ### Which one to reach for
 

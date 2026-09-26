@@ -7,10 +7,10 @@
 |  |  |
 | --- | --- |
 | SDK display name | Swagger Petstore - OpenAPI 3.0 |
-| Package | `automated-package-publishing-sdk` |
+| Package | `swagger-petstore-open-api-3-0` |
 | Package version | `1.0.26` |
 | API spec version | `1.0.26` |
-| Import specifier | `automated-package-publishing-sdk` — the package root is the **only** entry. Deep imports (`automated-package-publishing-sdk/models/...`) do not resolve; the `exports` map exposes `.` and `./package.json` and nothing else |
+| Import specifier | `swagger-petstore-open-api-3-0` — the package root is the **only** entry. Deep imports (`swagger-petstore-open-api-3-0/models/...`) do not resolve; the `exports` map exposes `.` and `./package.json` and nothing else |
 | Module format | dual ESM + CommonJS, as folder dialects (`dist/esm`, `dist/commonjs`), each with its own `package.json` marker. No `.mjs`, `.cjs`, `.d.mts` or `.d.cts` files exist |
 | Node floor | `>=20` (`engines.node`) |
 | TypeScript floor | a resolver that reads `exports` (4.7+), plus whatever the pinned `zod` requires — `zod@4` needs 5.5 or later. The public `.d.ts` chain reaches `zod/v4-mini`, so this is a real constraint rather than a build-tool version |
@@ -19,30 +19,28 @@
 
 Staleness check: the API spec version above changes when the SDK is regenerated from a new spec. If a lookup here fails to compile, trust the compiler and re-read the source file named in the row.
 
-All `Source` paths on this map and its sub-pages are relative to the **SDK root** — the directory holding this file and `package.json` — never to the page that carries them: a page two directories deep writes exactly what a page at the root would. The package ships its `src/` tree, so the same paths resolve inside `node_modules/automated-package-publishing-sdk/` too. An import specifier ending `.js` inside that source is the NodeNext spelling of the sibling `.ts` file.
+All `Source` paths on this map and its sub-pages are relative to the **SDK root** — the directory holding this file and `package.json` — never to the page that carries them: a page two directories deep writes exactly what a page at the root would. The package ships its `src/` tree, so the same paths resolve inside `node_modules/swagger-petstore-open-api-3-0/` too. An import specifier ending `.js` inside that source is the NodeNext spelling of the sibling `.ts` file.
 
 ---
 
 ## Getting a client
 
 ```ts
-import { ServerEnvironment, SwaggerPetstoreOpenApi30Client } from "automated-package-publishing-sdk";
+import { SwaggerPetstoreOpenApi30Client } from "swagger-petstore-open-api-3-0";
 
 const client = new SwaggerPetstoreOpenApi30Client({
-  serverEnvironment: ServerEnvironment.Production,
   petstoreAuth: "YOUR_API_KEY",
   apiKey: "YOUR_API_KEY",
 });
 ```
 
-The only constructor is `new SwaggerPetstoreOpenApi30Client(clientOptions: Partial<ClientOptions> = {})`, so `new SwaggerPetstoreOpenApi30Client()` is valid. Resources are memoized lazy getters on the client — `client.petApi`, `client.store`, `client.userApi` — and their classes are exported only for their merged namespaces and for `instanceof`; their constructors take engine internals that are not exported, so reach a resource only through its getter.
+The only constructor is `new SwaggerPetstoreOpenApi30Client(options: ClientOptions = {})`, so `new SwaggerPetstoreOpenApi30Client()` is the minimum. Resources are memoized lazy getters on the client — `client.petApi`, `client.store`, `client.userApi` — and their classes are exported only for their merged namespaces and for `instanceof`; their constructors take engine internals that are not exported, so reach a resource only through its getter.
 
 All `ClientOptions` fields (source: `src/client-options.ts`; every field is `readonly`):
 
 | Field | Type | Default |
 | --- | --- | --- |
-| `serverEnvironment` | `ServerEnvironment` | `ServerEnvironment.Production` |
-| `serverOptions` | `ServerOptions` | `{}` — each resolver merges its own per-environment defaults in |
+| `serverOptions` | the server's base-URL and template-variable overrides | `{}` — the resolver merges the declared defaults in |
 | `timeout` | `number` (ms) | `60_000` |
 | `fetch` | `FetchLike \| undefined` | the global `fetch`, resolved by the transport |
 | `petstoreAuth` | `TokenProvider \| undefined` | unset |
@@ -50,11 +48,11 @@ All `ClientOptions` fields (source: `src/client-options.ts`; every field is `rea
 
 The 2 auth fields are all optional, and an unset one is not an error — the operation that wanted it simply sends no credential. What each one puts on the wire, and which operations require it, are under Servers & auth.
 
-Two engine behaviours the table cannot show. A non-finite or non-positive `timeout` is **not** "no timeout" — the transport (`src/core/raw-client.ts`) falls back to its own ceiling and clamps anything above it. And when no `fetch` is reachable the **constructor** throws `SdkError`, not the first call.
+Two engine behaviours the table cannot show. A non-finite or non-positive `timeout` is **not** "no timeout" — the transport (`src/core/raw-client.ts`) falls back to its own ceiling and clamps anything above it. And when no `fetch` is reachable the **constructor** throws `ConfigurationError`, not the first call.
 
 **`ClientOptions.fetch` is the one extension point** — there are no hooks, no middleware and no interceptors, so a proxy, a custom agent, extra headers, retries or request logging all go here. A replacement **must forward `init.signal`** to whatever actually performs the request; spreading `...init` does it. Drop it and both the per-call signal and `timeout` go inert — the call neither aborts nor times out.
 
-**Cancellation.** The `signal` on `RequestOptions` is the whole per-request surface. An already-aborted signal rejects immediately, `err.cause` is whatever was passed to `abort()`, and the client-level `timeout` surfaces through the same branch with `err.kind === "timeout"`. There is no per-request timeout.
+**Cancellation.** The `signal` on `RequestOptions` is the whole per-request surface. Aborting rejects with the signal's **own `reason`** — whatever you passed to `abort()`, or the platform `DOMException` a bare `abort()` supplies — unwrapped, so it is **not** an `SwaggerPetstoreOpenApi30Error` and a `catch` that tests the family must rethrow it. An already-aborted signal rejects immediately. The client-level `timeout` is the SDK's own and does stay in the family, as `err.kind === "timeout"`. There is no per-request timeout.
 
 The entire per-request surface is the optional second argument of every operation:
 
@@ -79,66 +77,97 @@ The entire per-request surface is the optional second argument of every operatio
 
 ## Error-handling model (read once — applies to every operation)
 
-Operations are **throw-based**, and failures fall into **two disjoint families**. Neither is `instanceof` the other, so the two branches can never overlap and a complete `catch` needs both. `instanceof` is reliable **within one dialect**: a process that loads both — `import` in one file, `require` in another — gets two independent copies of every error class, and `instanceof` across that boundary is `false`. Narrow on `err.kind` or on `err.payload.kind` there, or on `err.name`, which is stable across copies.
-
-- **Family A — the API answered with an error status.** The call rejects with `ResponseError`, or with a subclass of it where the spec declared error bodies for that operation. `err.payload` is a discriminated union whose `kind` names the **response schema the spec declared**, *not* the status code — so two statuses sharing one schema share one arm, and `"undeclared"` is an always-present arm carrying the raw bytes.
-- **Family B — no usable response was produced.** The call rejects with a member of the `SwaggerPetstoreOpenApi30Error` set. `SwaggerPetstoreOpenApi30Error` is **abstract**: use it for `instanceof`, never construct it.
+Operations are **throw-based**, and every **operational** failure belongs to **one family**: `SwaggerPetstoreOpenApi30Error`, a union over six leaves, so one `instanceof SwaggerPetstoreOpenApi30Error` sees all of them. It is not the whole escape set — four throwables sit outside it, enumerated below. Every leaf names the call it raised — `err.method` and `err.uri` — and `message` opens with that name. `instanceof` is reliable **within one dialect**: a process that loads both — `import` in one file, `require` in another — gets two independent copies of every error class, and `instanceof` across that boundary is `false`. Narrow on `err.kind` there, or on `err.name`, which is stable across copies.
 
 Core types (public members with their declared types; all are `readonly`):
 
 | Type | Public members | Source |
 | --- | --- | --- |
-| `ResponseError<P>` | `status: number` · `headers: Headers` · `payload: ErrorPayload<P>`, and a `message` of the form `<status> <statusText>` | `src/core/response-error.ts` |
-| `Declared<K, B>` | `kind: K` · `body: B` | `src/core/response-error.ts` |
-| `ErrorPayload<P>` | `P` or `{ kind: "undeclared"; rawBody: ArrayBuffer }` | `src/core/response-error.ts` |
-| `Undeclared` | `kind: "undeclared"` · `rawBody: ArrayBuffer` — the always-present arm, carrying the untouched bytes of a status the spec does not describe | `src/core/response-error.ts` |
-| `SwaggerPetstoreOpenApi30Error` (abstract; declared as `CoreError`) | `kind: ErrorKind` · `message` · `cause` | `src/core/errors.ts` |
-| `SchemaError` | `kind: "schema"` · `rawBody: unknown` | `src/core/validation/schema-error.ts` |
-| `AuthError` | `kind: "auth"` · `failures: readonly unknown[]` | `src/core/errors.ts` |
-| `ApiResult<T, E>` | on success `{ ok: true; status; headers; value: T }`, on failure `{ ok: false; status; headers; errorMessage: string; error }` — `error` carries the **payload**, not the error object | `src/core/api-promise.ts` |
+| `SwaggerPetstoreOpenApi30Error` (declared as `CoreError`) | `kind: ErrorKind` · `method: HttpMethod` · `uri: string` · `message` · `cause` — the union every failure below belongs to | `src/core/errors.ts` |
+| `ResponseError` | the rung the server answered on, `ApiError \| DecodeError`; adds `status: number` · `headers: Headers` | `src/core/errors.ts` |
+| `ApiError` | `kind: "api"` · `payload` — the open arm, whose `kind` is `string`. **Not generic**: a typed operation's subclass redeclares `payload` with its own literal arms | `src/core/api-error.ts` |
+| `TimeoutError` | `kind: "timeout"` · `timeout: number` | `src/core/errors.ts` |
+| `DecodeError`, `EncodeError`, `ConnectionError`, `AuthError` | their `kind`, and nothing beyond the two rows above | `src/core/errors.ts` |
+| `Declared<K, B>` | `kind: K` · `body: B` | `src/core/api-error.ts` |
+| `ErrorPayload<P>` | `P` or `{ kind: "undeclared"; rawBody: ArrayBuffer }` | `src/core/api-error.ts` |
+| `Undeclared` | `kind: "undeclared"` · `rawBody: ArrayBuffer` — the always-present arm, carrying the untouched bytes of a status the spec does not describe | `src/core/api-error.ts` |
+| `ApiResult<T, E>` | on success `{ ok: true; status; headers; value: T }`, on failure `{ ok: false; status; headers; message: string; method: HttpMethod; uri: string; payload: ErrorPayload<P> }` — the failure branch carries the error's own members, never the error object | `src/core/api-promise.ts` |
 
-`ErrorKind` is one value per Family B class: `connection` (the `fetch` call rejected, or the body read failed mid-stream), `timeout` (the client-level timeout elapsed), `abort` (the per-call signal aborted, including one that was already aborted), `sdk` (a defect on the SDK side), `schema` (a value failed its schema in **either** direction — inbound the response body was malformed, outbound nothing was sent at all), and `auth` (a credential could not be **obtained**).
+`SwaggerPetstoreOpenApi30Error` and `ResponseError` are each a **type and a value**: the type is the union, the value is the abstract class every leaf extends, so `instanceof` and `err.kind` select the same set. Neither can be constructed or extended. `uri` is the absolute URL the call dialled, with the server variables expanded and the path parameters filled; the engine reads it **before** any query is applied, so no query parameter reaches it. One failure names an unresolved URI: a path parameter rejected by its schema arrives as an `EncodeError` whose `uri` still shows the unfilled `{braces}` — an `undefined` one included, since a path parameter is always required, so its schema rejects it first.
 
-**`AuthError` is about obtaining a credential, never about being refused one.** A 401 *from the API* is a Family A `ResponseError` like any other status, so the two are disjoint and one `catch` arm cannot absorb the other. A 401 does have one auth consequence: it invalidates whatever that operation's scheme had cached, so the **next** call re-acquires. The current request is not retried — see Servers & auth.
+`ErrorKind` is closed, so a `switch` over `err.kind` is exhaustive:
+
+| `err.kind` | What happened | Adds |
+| --- | --- | --- |
+| `"api"` | the API answered with an error status | `status` · `headers` · `payload` |
+| `"decode"` | the answer could not be turned into the declared value — the body was not JSON, failed its schema, arrived where none is declared, or died mid-read after the response line; `cause` carries the underlying failure | `status` · `headers` |
+| `"encode"` | a request value did not match its declared type, so **nothing was sent**. `cause` is the `SchemaError` that rejected it | — |
+| `"connection"` | `fetch` rejected before a response line arrived | — |
+| `"timeout"` | `ClientOptions.timeout` elapsed. `timeout` is the budget that ran out | `timeout` |
+| `"auth"` | a credential could not be **obtained**, per the paragraph below | — |
+
+**Four throwables sit outside the family**, so `instanceof SwaggerPetstoreOpenApi30Error` is `false` on each and a `catch` that tests it has to rethrow what is left. `ConfigurationError` comes out of the **`SwaggerPetstoreOpenApi30Client` constructor**, synchronously and before any `ApiPromise` exists: no reachable `fetch`. `SchemaError` is what a codec throws when called directly — `apiResponseSchema.decode(json)` — so it names no call; through an operation the same failure arrives one level down, on `DecodeError.cause` or `EncodeError.cause`, and a `serverOptions` override whose value is not a string raises it from the constructor too. Bugs stay outside the family and reach you raw — an unparseable `baseUrl` and a non-file value where a `FileInput` was declared are both `TypeError`. And a caller abort arrives as the signal's own `reason`, unwrapped. The first two are exported from the package root; the other two are not ours to export.
+
+**`AuthError` is about obtaining a credential, never about being refused one** — every configured branch of an alternatives requirement failing. A 401 *from the API* is an `ApiError` like any other status. A 401 does have one auth consequence: it invalidates whatever that operation's scheme had cached, so the **next** call re-acquires. The current request is not retried — see Servers & auth. An alternatives requirement **falls through**: a configured scheme that throws is not the end of it, the next configured one is tried, and only when all of them have failed does it throw. When exactly one was configured, its failure surfaces as it would from that scheme alone. Otherwise it is an `AuthError` whose `cause` is an `AggregateError` holding what each branch threw, in the order tried. Cancellation is the exception: an abort or a timeout escapes immediately rather than being collected.
 
 ```ts
 try {
-  const response = await client.petApi.addPet({ name, photoUrls });
+  const response = await client.petApi.addPet({ name: "doggie", photoUrls: ["some example string"], id: 10 });
 } catch (err) {
-  if (err instanceof ResponseError) {
-    // TODO: the API answered with an error status — read err.status and err.payload
-  }
   if (err instanceof SwaggerPetstoreOpenApi30Error) {
-    // TODO: no usable response was produced — err.kind says which
+    switch (err.kind) {
+      case "api":
+        // TODO: the API answered with an error status — read err.status and err.payload
+        break;
+      case "decode":
+        // TODO: the answer did not fit the spec — read err.status and err.cause
+        break;
+      case "encode":
+        // TODO: nothing was sent — err.cause is the SchemaError that rejected the value
+        break;
+      case "connection":
+      case "timeout":
+      case "auth":
+        // TODO: no response was produced — err.kind says which
+        break;
+    }
+  } else {
+    throw err;
   }
 }
 ```
 
-A typed subclass narrows further, on `err.payload.kind`. Which arms an operation declares, with the status each covers, is the **Error arms** bullet on its page below.
+**Narrowing the payload.** A typed subclass declares its arms as literals, so `switch (err.payload.kind)` narrows `payload.body` to exactly one model. The `kind` is named after the arm's **body**, *not* its status code: a body that references a model takes that model's name in lower camel, any other body `error{Status}`, and a second arm that would land on the same name takes a numeric suffix. On the base `ApiError` — what an operation with no declared error bodies rejects with — `payload.kind` is `string`, so comparing it to `"undeclared"` narrows **nothing**: use `"rawBody" in err.payload`. Which arms an operation declares, with the status each covers, is the **Error arms** bullet on its page below.
 
-**Matcher precedence** for a subclass with several arms: an exact numeric status is looked up across the whole table **first**; only then does the first covering wildcard or range win.
+**Matcher precedence** for a subclass with several arms, in three passes: an exact numeric status is looked up across the whole table **first**, then the first covering `[lo, hi]` range, and last a `"default"` arm where the spec declared one. A body that does not fit the arm it matched is a `DecodeError` — except on `"default"`, which describes no status in particular and so **degrades to the `"undeclared"` arm** rather than throwing.
 
-**The non-throwing form exists on every operation.** `.asApiResult()` returns `ApiResult<T, E>` and does **not** reject for an HTTP error status — it still rejects for Family B. It must be called on the value the operation returned: `ApiPromise` overrides `Symbol.species`, so `.then()`, `.catch()` and `.finally()` hand back a plain `Promise` and the method is gone.
+**The non-throwing form exists on every operation.** `.asApiResult()` returns `ApiResult<T, E>` and does **not** reject for an HTTP error status — every other failure still rejects, `DecodeError` included, so the `catch` stays. It must be called on the value the operation returned: `ApiPromise` overrides `Symbol.species`, so `.then()`, `.catch()` and `.finally()` hand back a plain `Promise` and the method is gone.
 
 ```ts
 try {
-  const result = await client.petApi.addPet({ name, photoUrls }).asApiResult();
+  const result = await client.petApi.addPet({
+    name: "doggie",
+    photoUrls: ["some example string"],
+    id: 10,
+  }).asApiResult();
   // TODO: Use 'result.status' and 'result.headers' to read the raw response status and headers
   if (result.ok) {
     // TODO: Use 'result.value' — what this operation resolves to
   } else {
-    // TODO: Use 'result.errorMessage' and 'result.error', narrowed on 'result.error.kind'
+    // TODO: Use 'result.message', 'result.method' and 'result.uri', and narrow 'result.payload'
   }
 } catch (err) {
   if (err instanceof SwaggerPetstoreOpenApi30Error) {
-    // TODO: no usable response was produced — err.kind says which
+    // TODO: no error status was produced — err.kind says which failure this is
+  } else {
+    throw err;
   }
 }
 ```
 
-`result.error` is the same `ErrorPayload<P>` a thrown `ResponseError` carries on `err.payload`, not the error object — so the **Error arms** bullet on an operation's page enumerates it either way, and the `catch` above it is for Family B alone.
+`result.payload` is the same `ErrorPayload<P>` a thrown `ApiError` carries on `err.payload`, and `result.message`, `result.method` and `result.uri` are that error's own members — so the **Error arms** bullet on an operation's page enumerates the payload either way, and the `catch` above it is for the rest of the family. `result.method` and `result.uri` are named on this map alone.
 
-Of **19 operations**, **19** declare typed error bodies and **0** reject with the base `ResponseError`, whose payload is always the `"undeclared"` arm.
+Of **19 operations**, **19** declare typed error bodies and **0** reject with the base `ApiError`, whose payload is always the `"undeclared"` arm.
 
 ---
 
@@ -153,9 +182,11 @@ Each page below carries one block per operation, with bullets in the fixed order
 | **Call shape `op(request, options?)`** — one flat request object first, the per-call options second. There is no positional overload, and no per-call base URL, header, timeout, retry or auth override | here, Getting a client | never — it always holds |
 | **The request object is flat and channel-blind.** A field named `body` *is* the whole request body; every other field is fanned out to path, query, header or form by the SDK. Nothing in the object is nested by channel | here | never — the **Fields** table `Channel` column always resolves it |
 | **Throw-based, returning `ApiPromise<T, E>`.** `await` it for `T`; call `.asApiResult()` on the returned value for the non-throwing `ApiResult<T, E>`. No operation is result-only | here, Error-handling model | never |
-| **`E` is the base `ResponseError`** and the payload is always the `"undeclared"` arm | Error-handling model | the spec declared error bodies — the **Error** bullet names a subclass and an **Error arms** bullet gives each arm's tag, status and body |
+| **`E` is the base `ApiError`** and the payload is always the `"undeclared"` arm | Error-handling model | the spec declared error bodies — the **Error** bullet names a subclass and an **Error arms** bullet gives each arm's tag, status and body |
 | **The request body and its media type are stated on every block**, by a **Request body** bullet that is never omitted. `none` means no body **and no `Content-Type` header**, and a named media type means the body is **required** — the request type's field is not optional | here | the spec declared the body optional — the bullet adds **Optional**, the field is `field?:`, and omitting it sends no body and no `Content-Type` header at all |
 | **Resolves once, to one whole value** — except a binary body, which resolves to a stream the caller reads. No pagination, no SSE, no async iterables and no partial results | here, Not on this SDK | never at this SDK version |
+| **Six identity headers ride every request** — `User-Agent`, `X-APIMatic-Lang`, `X-APIMatic-Package-Version`, `X-APIMatic-Gen-Version`, `X-APIMatic-OS` and `X-APIMatic-Runtime`. They identify the generated SDK, so **no option configures them** | here | the operation declared a header of the same name — the operation's layer is folded after the client's, so its value wins |
+| **A fresh `Idempotency-Key` rides every non-GET call that does not declare that header itself**, minted per call in the operation's own header layer. It makes a *replayed* request safe, not a repeated one — a value that changes per call deduplicates nothing, so it is no substitute for a key the API documents. **No option sets it**, and once minted it is always sent — a runtime with no `crypto` global mints it from `Math.random` mixed with the clock and a per-process counter | here | the operation is a GET, or declared that header itself — then its own value stands and nothing is minted |
 | **Server group `default`** | here, Servers & auth | the operation is on another group — its block carries a **Server** bullet |
 | **Every operation states its auth requirement**, by an **Auth** bullet that is never omitted — one scheme, a composition over schemes, or `none` for a public operation | here, Servers & auth | never — the bullet is always present |
 | **Every value is schema-encoded before the request is built** — a wrong type or format rejects and nothing is sent. **An omitted field that has a default is still sent, with that default**, filled by the SDK rather than by the server | here | the field has a default — it appears in the **Fields** table `Default` column |
@@ -164,7 +195,7 @@ Each page below carries one block per operation, with bullets in the fixed order
 
 **Wire serialization, once, for every channel** (source: `src/core/param-value.ts`, `src/core/url.ts`, `src/core/headers.ts`, `src/core/params.ts`). This block ships with `src/core/` and is versioned with it:
 
-- **`path`** takes no style. An array is comma-joined with each element percent-encoded **separately**; an object becomes one percent-encoded JSON document inside the segment. A field whose encoded value is `undefined` throws `SdkError` naming the unfilled placeholder; `null` collapses the segment.
+- **`path`** takes no style. An array is comma-joined with each element percent-encoded **separately**; an object becomes one percent-encoded JSON document inside the segment. A field whose encoded value is `undefined` throws `TypeError` naming the unfilled placeholder — a guard no operation reaches, since a path parameter is always required and its schema rejects `undefined` first, as an `EncodeError`; `null` collapses the segment.
 - **`header`** takes no style. An array is comma-joined un-encoded (OpenAPI `simple`). `undefined` says nothing, while `null` and an empty array are tombstones that remove the header. Later layers win by **lowercased** name, in the order body content type, then client defaults, then operation.
 - **`query`** and **`form`** repeat an array's key and bracket-expand an object at any depth (`filter[status]=open`, `ranges[amount][min]=10`). An array of *objects* bracket-expands per element with **no index**, so element boundaries collapse.
 - Nullish **fields** are dropped from every channel except `path`, where `null` collapses the segment. A nullish array **element** is dropped, so an all-nullish array emits no key at all.
@@ -204,14 +235,14 @@ Each page below carries one block per operation, with bullets in the fixed order
 | --- | --- | --- |
 | Objects (plain `type`, no class) | 6 | `src/models/` |
 | Enums (open; const companion plus schema) | 2 | `src/models/` |
-| Typed error classes (`ResponseError` subclass, one per typed operation) | 19 | `src/resources/`, in the declaring module's namespace |
+| Typed error classes (`ApiError` subclass, one per typed operation) | 19 | `src/resources/`, in the declaring module's namespace |
 
 Conventions: every model is a plain `type`, not a class — build one with an object literal; there is no constructor and no builder. `f: T` is required, `f?: T` is optional (omit the key), and `f: T | null` is a **required, nullable** field where `null` is a value distinct from an omitted key. Optional properties are declared `f?: T`, not `f?: T | undefined`, so under `exactOptionalPropertyTypes` you must **omit or spread** an absent field rather than assign `undefined` to it. A schema value is directly usable both ways: `Schema<T, W = Encoded<T>>` is `{ decode(v: unknown): T; encode(v: unknown): W }`, and `Encoded<T>` is the wire projection — a `Date` becomes `string | number`, a `Uint8Array` becomes a base64 `string`, recursing through arrays and objects. `EnumSchema<T>` adds `readonly values: readonly T[]`, so an enum's known set is testable at run time. Enums are **not** TypeScript `enum`s and are open: a `const` companion plus a union that includes `(string & {})` or `(number & {})`, so **any** value of the base type is assignable and the schema validates the base type only, never membership — read the member names and the values they send off the companion, and use `.values` to test membership yourself. A discriminated union is narrowed with an exhaustive `switch` on its tag, with no fallback arm and no type guard to import; one without a discriminant is narrowed on the shape of its arms, which its declaration spells out. A property default is filled by the SDK on **encode as well as decode**, so omitting one still sends it — read it off the `defaulted(…)` entry in the schema, or off the property's `@default`. A property's wire name is its `_keysMap` entry in the schema and may differ from the TypeScript name — read it there rather than deriving it. A named spec schema whose resolved form is a bare container, or which is used only as a form-encoded body, gets no model file and no exported name: the first is written inline at each use site, the second is flattened onto the operation's request type, one field per property, so read that field list from the request type.
 
 Every name comes from the package root — there is no default export, and no deep imports:
 
 ```ts
-import { type ApiResponse, apiResponseSchema } from "automated-package-publishing-sdk";
+import { type ApiResponse, apiResponseSchema } from "swagger-petstore-open-api-3-0";
 ```
 
 ---
@@ -233,29 +264,18 @@ A scheme **contributes** headers, query parameters and cookies rather than mutat
 
 **An unconfigured scheme does not throw.** The request goes out without that credential and the server decides. So a 401 on a call you believed was authenticated is usually an unset credential field rather than an SDK failure — check the operation's **Auth** bullet against what the client was given.
 
-**A 401 invalidates, it does not retry.** On a **401** — 401 only, not 403 — the SDK clears whatever that operation's scheme had cached, so the *next* call re-acquires. The current request still rejects with the operation's `ResponseError`. There is no retry loop on this SDK, and the credential fields are on `ClientOptions`.
+**A 401 invalidates, it does not retry.** On a **401** — 401 only, not 403 — the SDK clears whatever that operation's scheme had cached, so the *next* call re-acquires. The current request still rejects with the operation's `ApiError`. There is no retry loop on this SDK, and the credential fields are on `ClientOptions`.
 
-**Environments.** `ClientOptions.serverEnvironment` selects one for the whole client (source: `src/servers.ts`). `ServerEnvironment` is a `const` object with a derived union type, not a TypeScript `enum` — and unlike the model enums it is **closed**, so only the values below are assignable.
+**serverOptions.** 2 logical servers; each operation is bound to one at generation time, and a block carries a **Server** bullet only when its group is not `default`. Override `serverOptions.default` and `serverOptions.authServer`.
 
-| `ServerEnvironment` member | Value |
-| --- | --- |
-| `ServerEnvironment.Production` *(default)* | `production` |
+**Base URLs and overrides.** One row per group, and every cell is overridden at `serverOptions.<group>.<name>`, where `<name>` is `baseUrl` for the whole template or the variable name for one substitution. An override merges with the built-in defaults **key by key**.
 
-**Server groups.** 2 logical servers; each operation is bound to one at generation time, and a block carries a **Server** bullet only when its group is not `default`.
+| Group | Base URL template | Template variables (default) |
+| --- | --- | --- |
+| `default` | `https://petstore3.swagger.io/api/v3` | — |
+| `authServer` | `https://petstore3.swagger.io/oauth` | — |
 
-| Group | Options type |
-| --- | --- |
-| `default` | `DefaultServerOptions` |
-| `authServer` | `AuthServerServerOptions` |
-
-**Base URLs and overrides.** One row per group-and-environment pair, so the table stays four columns wide however many environments a spec declares. Every cell is overridden at `serverOptions.<group>.<environment>.<name>`, where `<name>` is `baseUrl` for the whole template or the variable name for one substitution. An override merges with the built-in defaults **per pair, key by key**.
-
-| Group | Environment | Base URL template | Template variables (default) |
-| --- | --- | --- | --- |
-| `default` | `production` | `https://petstore3.swagger.io/api/v3` | — |
-| `authServer` | `production` | `https://petstore3.swagger.io/oauth` | — |
-
-A `baseUrl` override replaces the template verbatim; variable values are percent-encoded into it, and templates are expanded per request rather than once at construction. An environment value the SDK does not know throws `SdkError` when a server is resolved — at the first call, not at construction. It is the one failure on this surface that throws **synchronously** out of the operation method, so a `try`/`await` catches it but `.asApiResult()` and `.catch()` never see it.
+A `baseUrl` override replaces the template verbatim; variable values are percent-encoded into it, and templates are expanded per request rather than once at construction.
 
 ---
 
@@ -265,9 +285,9 @@ The facts that change what you type, and the floors that decide whether the pack
 
 |  |  |
 | --- | --- |
-| One entry, two dialects | `import` resolves `dist/esm`, `require` resolves `dist/commonjs`, both through the single `.` export. In a TypeScript CommonJS file the typed spelling is `import sdk = require("automated-package-publishing-sdk")`; a plain `require` destructure works at run time but yields no types. `instanceof` is reliable **within** one dialect — if your app loads both, the two copies declare separate error classes |
+| One entry, two dialects | `import` resolves `dist/esm`, `require` resolves `dist/commonjs`, both through the single `.` export. In a TypeScript CommonJS file the typed spelling is `import sdk = require("swagger-petstore-open-api-3-0")`; a plain `require` destructure works at run time but yields no types. `instanceof` is reliable **within** one dialect — if your app loads both, the two copies declare separate error classes |
 | Consumer compiler settings | Under `exactOptionalPropertyTypes`, **omit or spread** an absent optional rather than assigning `undefined` to it. Under `verbatimModuleSyntax`, names that carry no runtime value (the options types, every model type) must be imported with `import type` |
-| Required globals, and only these | Always: `fetch` (or a replacement passed as the `fetch` option), `AbortController`, `Headers`, `URL`, `setTimeout` and `clearTimeout`, `JSON`, `BigInt`. Nothing else — no credential this SDK sends reaches for a further global. |
+| Required globals, and only these | Always: `fetch` (or a replacement passed as the `fetch` option), `AbortController`, `Headers`, `URL`, `setTimeout` and `clearTimeout`, `JSON`, `BigInt`. `crypto.randomUUID` or `crypto.getRandomValues` mints the `Idempotency-Key` a non-GET call carries — **read and never required**, since a runtime offering neither fills the bytes from `Math.random` mixed with the clock and a per-process counter, so the header is always sent. Three more are **read and never required** — `process`, `navigator` and `EdgeRuntime`, which name the host in `X-APIMatic-OS` and `X-APIMatic-Runtime`. A runtime offering none of them sends neither header and works unchanged. |
 | Values that cross the boundary | `Date` for `date-time`, `string` for `date`, `ArrayBuffer` for an undeclared error body, `Headers` on a result and on a thrown `ResponseError`. The engine also carries a `bigint` int64 path and a base64 `bytes()` codec, reached only where a model uses them |
 | Browser distribution | The package ships `dist/esm` and `dist/commonjs` and nothing else — **no bundle, no UMD file, no CDN artifact**. Use it through a bundler, which resolves `zod/v4-mini`, deduplicates it against your own copy and tree-shakes the rest |
 | Other runtimes | Deno, Bun, Cloudflare Workers and Vercel Edge are all likely to work — the SDK needs only the globals above and imports no Node built-in — but **none of them is tested for this package**, so nothing here claims support for them |
@@ -280,5 +300,5 @@ The browser floor comes from the emitted output rather than the sources: `tshy` 
 | Firefox | **90** | private class fields and methods |
 | Safari / iOS Safari | **15** | private class **methods** |
 
-That table is the **module-load** floor: below it the SDK fails while the module is evaluating, not at the first call. Two things degrade quietly above it. `{ cause }` on the `Error` constructor needs Chrome 93, Firefox 91 or Safari 15, so below that `err.cause` is `undefined`. More consequentially, **cancellation needs `AbortController.abort(reason)` and `AbortSignal.reason`**, which arrived in Chrome 98, Firefox 97 and Safari 15.4 — between the module-load floor and those versions the engine still aborts the request but produces no typed error at all.
+That table is the **module-load** floor: below it the SDK fails while the module is evaluating, not at the first call. Two things degrade quietly above it. `{ cause }` on the `Error` constructor needs Chrome 93, Firefox 91 or Safari 15, so below that `err.cause` is `undefined`. More consequentially, **cancellation needs `AbortController.abort(reason)` and `AbortSignal.reason`**, which arrived in Chrome 98, Firefox 97 and Safari 15.4 — between the module-load floor and those versions the engine still aborts the request, but nothing carries the reason out, so neither your own abort value nor the SDK's `TimeoutError` reaches you.
 

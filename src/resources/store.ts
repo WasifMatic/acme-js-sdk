@@ -1,9 +1,10 @@
 import type { AuthSchemes } from "../auth-schemes.js";
+import { ApiError, type Declared, type ErrorDecoders, type ErrorPayload } from "../core/api-error.js";
 import type { ApiPromise } from "../core/api-promise.js";
 import type { RequestOptions } from "../core/api-request.js";
 import { noneAuth } from "../core/auth/schemes.js";
 import type { RawClient } from "../core/raw-client.js";
-import { ResponseError, type Declared, type ErrorDecoders } from "../core/response-error.js";
+import { uuid } from "../core/uuid.js";
 import * as s from "../core/validation/index.js";
 import { orderStatusSchema, type OrderStatus } from "../models/order-status.js";
 import { orderSchema, type Order } from "../models/order.js";
@@ -36,8 +37,8 @@ export class Store {
    * `err.payload.kind`
    *
    * @throws {@link SwaggerPetstoreOpenApi30Error} when no usable response was produced: a
-   * connection failure, a timeout, an abort, a schema violation, or a credential that could not be
-   * obtained
+   * connection failure, a timeout, a body that would not decode, a value that would not encode, or
+   * a credential that could not be obtained
    */
   deleteOrder(
     request: Store.DeleteOrderRequest,
@@ -49,6 +50,7 @@ export class Store {
         url: this.#servers.default("/store/order/{orderId}"),
         auth: noneAuth,
         pathParams: [{ name: "orderId", value: request.orderId, schema: s.number() }],
+        headers: [{ name: "Idempotency-Key", value: uuid(), schema: s.string() }],
         body: { kind: "empty" },
       },
       {
@@ -71,8 +73,8 @@ export class Store {
    * `err.payload.kind`
    *
    * @throws {@link SwaggerPetstoreOpenApi30Error} when no usable response was produced: a
-   * connection failure, a timeout, an abort, a schema violation, or a credential that could not be
-   * obtained
+   * connection failure, a timeout, a body that would not decode, a value that would not encode, or
+   * a credential that could not be obtained
    */
   getInventory(options?: RequestOptions): ApiPromise<Record<string, number>, Store.GetInventoryError> {
     return this.#rawClient.execute(
@@ -103,8 +105,8 @@ export class Store {
    * `err.payload.kind`
    *
    * @throws {@link SwaggerPetstoreOpenApi30Error} when no usable response was produced: a
-   * connection failure, a timeout, an abort, a schema violation, or a credential that could not be
-   * obtained
+   * connection failure, a timeout, a body that would not decode, a value that would not encode, or
+   * a credential that could not be obtained
    */
   getOrderById(
     request: Store.GetOrderByIdRequest,
@@ -138,8 +140,8 @@ export class Store {
    * `err.payload.kind`
    *
    * @throws {@link SwaggerPetstoreOpenApi30Error} when no usable response was produced: a
-   * connection failure, a timeout, an abort, a schema violation, or a credential that could not be
-   * obtained
+   * connection failure, a timeout, a body that would not decode, a value that would not encode, or
+   * a credential that could not be obtained
    */
   placeOrder(
     request: Store.PlaceOrderRequest,
@@ -150,6 +152,7 @@ export class Store {
         method: "POST",
         url: this.#servers.default("/store/order"),
         auth: noneAuth,
+        headers: [{ name: "Idempotency-Key", value: uuid(), schema: s.string() }],
         body: {
           kind: "formUrlEncoded",
           value: [
@@ -177,19 +180,23 @@ export namespace Store {
     orderId: number;
   };
 
-  export class DeleteOrderError extends ResponseError<
-    Declared<"error400", undefined> | Declared<"error404", undefined> | Declared<"errorDefault", undefined>
-  > {
+  export class DeleteOrderError extends ApiError {
+    declare readonly payload: ErrorPayload<
+      Declared<"error400", undefined> | Declared<"error404", undefined> | Declared<"errorDefault", undefined>
+    >;
+
     static readonly errors: ErrorDecoders<DeleteOrderError> = [
       { on: 400, kind: "error400", decode: { kind: "empty" } },
       { on: 404, kind: "error404", decode: { kind: "empty" } },
-      { on: [400, 599], kind: "errorDefault", decode: { kind: "empty" } },
+      { on: "default", kind: "errorDefault", decode: { kind: "empty" } },
     ];
   }
 
-  export class GetInventoryError extends ResponseError<Declared<"errorDefault", undefined>> {
+  export class GetInventoryError extends ApiError {
+    declare readonly payload: ErrorPayload<Declared<"errorDefault", undefined>>;
+
     static readonly errors: ErrorDecoders<GetInventoryError> = [
-      { on: [400, 599], kind: "errorDefault", decode: { kind: "empty" } },
+      { on: "default", kind: "errorDefault", decode: { kind: "empty" } },
     ];
   }
 
@@ -198,13 +205,15 @@ export namespace Store {
     orderId: number;
   };
 
-  export class GetOrderByIdError extends ResponseError<
-    Declared<"error400", undefined> | Declared<"error404", undefined> | Declared<"errorDefault", undefined>
-  > {
+  export class GetOrderByIdError extends ApiError {
+    declare readonly payload: ErrorPayload<
+      Declared<"error400", undefined> | Declared<"error404", undefined> | Declared<"errorDefault", undefined>
+    >;
+
     static readonly errors: ErrorDecoders<GetOrderByIdError> = [
       { on: 400, kind: "error400", decode: { kind: "empty" } },
       { on: 404, kind: "error404", decode: { kind: "empty" } },
-      { on: [400, 599], kind: "errorDefault", decode: { kind: "empty" } },
+      { on: "default", kind: "errorDefault", decode: { kind: "empty" } },
     ];
   }
 
@@ -218,13 +227,15 @@ export namespace Store {
     complete?: boolean;
   };
 
-  export class PlaceOrderError extends ResponseError<
-    Declared<"error400", undefined> | Declared<"error422", undefined> | Declared<"errorDefault", undefined>
-  > {
+  export class PlaceOrderError extends ApiError {
+    declare readonly payload: ErrorPayload<
+      Declared<"error400", undefined> | Declared<"error422", undefined> | Declared<"errorDefault", undefined>
+    >;
+
     static readonly errors: ErrorDecoders<PlaceOrderError> = [
       { on: 400, kind: "error400", decode: { kind: "empty" } },
       { on: 422, kind: "error422", decode: { kind: "empty" } },
-      { on: [400, 599], kind: "errorDefault", decode: { kind: "empty" } },
+      { on: "default", kind: "errorDefault", decode: { kind: "empty" } },
     ];
   }
 }

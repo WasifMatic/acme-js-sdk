@@ -1,6 +1,7 @@
-import type { AnyResponseError, PayloadOf } from "./response-error.js";
+import type { AnyApiError, PayloadOf } from "./api-error.js";
+import type { HttpMethod } from "./api-request.js";
 
-export type RequestOutcome<T, E extends AnyResponseError> =
+export type RequestOutcome<T, E extends AnyApiError> =
   | { ok: true; status: number; headers: Headers; data: T }
   | { ok: false; status: number; headers: Headers; error: E };
 
@@ -8,24 +9,39 @@ export type RequestOutcome<T, E extends AnyResponseError> =
  * The non-throwing view of a call, returned by {@link ApiPromise.asApiResult}.
  *
  * @remarks
- * Narrow on `ok`. Both branches carry the HTTP `status` and response `headers`, so a failure stays
- * inspectable without a `catch`. On the failure branch `error` is the error **payload**, not the
- * error instance — narrow it further on `error.kind`, which is the arm name the operation's error
- * class declares for a status the spec describes, and `"undeclared"` for one it does not.
+ * Narrow on `ok`. The success branch carries `value`. The failure branch is a plain object rather
+ * than the error instance, carrying its `status`, `headers`, `message` and `payload` plus the
+ * `method` and `uri` of the call, and `result.payload` narrows exactly as `err.payload` would.
  */
-export type ApiResult<T, E extends AnyResponseError> =
+export type ApiResult<T, E extends AnyApiError> =
   | { ok: true; status: number; headers: Headers; value: T }
-  | { ok: false; status: number; headers: Headers; errorMessage: string; error: PayloadOf<E> };
+  | {
+      ok: false;
+      status: number;
+      headers: Headers;
+      message: string;
+      method: HttpMethod;
+      uri: string;
+      payload: PayloadOf<E>;
+    };
 
 /**
- * The promise every operation returns: resolves with `T`, rejects with `E`.
+ * The promise every operation returns: resolves with `T`, rejects with `E` or a `CoreError`.
  *
  * @remarks
- * It is a real `Promise`, so `await`, `.then` and `Promise.all` all work. Awaiting it throws the
- * operation's error class on failure. Call {@link ApiPromise.asApiResult} instead to get a
- * non-throwing {@link ApiResult} carrying the status and headers alongside the value.
+ * It is a real `Promise`, so `await`, `.then` and `Promise.all` all work. Awaiting it throws `E` on
+ * an error status and a `CoreError` when no usable response was produced, so a complete `catch`
+ * needs both. A bug rejects as the raw error it threw, outside the family. Call
+ * {@link ApiPromise.asApiResult} for a non-throwing {@link ApiResult} instead.
+ *
+ * `.then`, `.catch` and `.finally` hand back a plain `Promise`, which has no `asApiResult` on it.
+ * Call that method on the value the operation returned.
+ *
+ * Nothing here suppresses an unhandled rejection. An abandoned call that fails is reported by the
+ * runtime: `unhandledRejection` on Node, which by default ends the process, and
+ * `unhandledrejection` in a browser.
  */
-export class ApiPromise<T, E extends AnyResponseError> extends Promise<T> {
+export class ApiPromise<T, E extends AnyApiError> extends Promise<T> {
   readonly #outcome: Promise<RequestOutcome<T, E>>;
 
   constructor(outcome: Promise<RequestOutcome<T, E>>) {
@@ -33,8 +49,6 @@ export class ApiPromise<T, E extends AnyResponseError> extends Promise<T> {
       outcome.then((o) => (o.ok ? resolve(o.data) : reject(o.error)), reject);
     });
     this.#outcome = outcome;
-
-    this.catch(() => {});
   }
 
   static override get [Symbol.species](): PromiseConstructor {
@@ -42,14 +56,20 @@ export class ApiPromise<T, E extends AnyResponseError> extends Promise<T> {
   }
 
   /**
-   * Resolves to an {@link ApiResult} instead of throwing, and never rejects for an API error.
+   * Resolves to an {@link ApiResult} instead of throwing: an error status arrives as a value, not
+   * as a rejection.
    *
    * @remarks
-   * This is also the only way to reach the HTTP status and response headers of a successful call.
-   * Transport faults — a dropped connection, a timeout, an abort — still reject, because there is
-   * no response to report.
+   * It is also the only way to read the HTTP status and response headers of a successful call. An
+   * error status is the only failure it turns into a value. A request value that would not encode,
+   * auth, a dropped connection, a timeout and a body that would not decode all still reject, and a
+   * caller abort rejects with the signal's own `reason`.
+   *
+   * Call it on the value the operation returned, in the same turn: marking this promise handled is
+   * its first act, so a call deferred past a turn leaves the rejection unhandled until it runs.
    */
   async asApiResult(): Promise<ApiResult<T, E>> {
+    this.catch(() => {});
     const o = await this.#outcome;
     return o.ok
       ? {
@@ -60,10 +80,12 @@ export class ApiPromise<T, E extends AnyResponseError> extends Promise<T> {
         }
       : {
           ok: false,
-          error: o.error.payload as PayloadOf<E>,
-          errorMessage: o.error.message,
           status: o.error.status,
-          headers: o.headers,
+          headers: o.error.headers,
+          message: o.error.message,
+          method: o.error.method,
+          uri: o.error.uri,
+          payload: o.error.payload,
         };
   }
 }

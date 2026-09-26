@@ -1,6 +1,6 @@
 import type { AuthParams, AuthScheme } from "../api-request.js";
 import type { BasicAuthCredentials, TokenProvider } from "./credentials.js";
-import { AuthError, CoreError, SdkError } from "../errors.js";
+import { ConfigurationError, CoreError } from "../errors.js";
 import * as s from "../validation/index.js";
 
 const NO_PARAMS: AuthParams = {};
@@ -22,9 +22,7 @@ export function bearerAuth(token: TokenProvider | undefined): AuthScheme {
 
 export function basicAuth(credentials: BasicAuthCredentials | undefined): AuthScheme {
   if (credentials !== undefined && credentials.username.includes(":")) {
-    throw new SdkError({
-      message: "A basic-auth username cannot contain a colon (RFC 7617 section 2).",
-    });
+    throw new ConfigurationError("A basic-auth username cannot contain a colon (RFC 7617 section 2).");
   }
   return {
     resolve() {
@@ -94,15 +92,14 @@ export function anyAuth(...schemes: readonly AuthScheme[]): AuthScheme {
         try {
           return await scheme.resolve(signal);
         } catch (err) {
-          if (err instanceof CoreError && (err.kind === "abort" || err.kind === "timeout")) throw err;
+          if (signal.aborted) throw signal.reason;
+          if (err instanceof CoreError && err.kind === "timeout") throw err;
           failures.push(err);
         }
       }
       if (failures.length === 0) return NO_PARAMS;
-      throw new AuthError({
-        message: "No authentication scheme succeeded.",
-        cause: failures.length === 1 ? failures[0] : new AggregateError(failures),
-      });
+      if (failures.length === 1) throw failures[0];
+      throw new AggregateError(failures, "No authentication scheme succeeded.");
     },
     hasCredentials: () => schemes.some((scheme) => scheme.hasCredentials()),
     invalidate() {

@@ -4,7 +4,7 @@
 
 Accessor: `client.petApi` · Source: `src/resources/pet-api.ts` · 8 operations · Request and error types: namespace `PetApi`
 
-**Type sources**: every type an operation names, with the file that declares it and the schema value exported beside it. Import every name from `automated-package-publishing-sdk`; the `Source` path is where to **read** the shape, never what to import. `ResponseError`, the runtime error family and the file vocabulary are excluded — see sdk-map.md.
+**Type sources**: every type an operation names, with the file that declares it and the schema value exported beside it. Import every name from `swagger-petstore-open-api-3-0`; the `Source` path is where to **read** the shape, never what to import. `ApiError`, the runtime error family and the file vocabulary are excluded — see sdk-map.md.
 
 ### addPet
 
@@ -12,9 +12,10 @@ Accessor: `client.petApi` · Source: `src/resources/pet-api.ts` · 8 operations 
 - **Wire**: `POST /pet`
 - **Auth**: `petstoreAuth`
 - **Request body**: `application/x-www-form-urlencoded;charset=UTF-8` — every field marked `form`
+- **SDK-sent**: `header Idempotency-Key` (minted per call)
 - **Returns**: `Pet`
-- **Error**: `PetApi.AddPetError` — **typed arms**, narrowed on `err.payload.kind`
-- **Error arms**: `"error400"` [400] no body · `"error422"` [422] no body · `"errorDefault"` [400–599] no body · `"undeclared"` [any other] `rawBody: ArrayBuffer`
+- **Error**: `SwaggerPetstoreOpenApi30Error` with `kind: "api"`, an instance of `PetApi.AddPetError` — **typed arms**, narrowed on `err.payload.kind`
+- **Error arms**: `"error400"` [400] no body · `"error422"` [422] no body · `"errorDefault"` [default — any status no arm above covers] no body · `"undeclared"` [a `default`-matched response that carried a body] `rawBody: ArrayBuffer`
 
 **Fields** — `PetApi.AddPetRequest` (6):
 
@@ -40,9 +41,10 @@ Accessor: `client.petApi` · Source: `src/resources/pet-api.ts` · 8 operations 
 - **Wire**: `DELETE /pet/{petId}`
 - **Auth**: `petstoreAuth`
 - **Request body**: none — no `Content-Type` header is sent
+- **SDK-sent**: `header Idempotency-Key` (minted per call)
 - **Returns**: `undefined` — the operation resolves to nothing
-- **Error**: `PetApi.DeletePetError` — **typed arms**, narrowed on `err.payload.kind`
-- **Error arms**: `"error400"` [400] no body · `"errorDefault"` [400–599] no body · `"undeclared"` [any other] `rawBody: ArrayBuffer`
+- **Error**: `SwaggerPetstoreOpenApi30Error` with `kind: "api"`, an instance of `PetApi.DeletePetError` — **typed arms**, narrowed on `err.payload.kind`
+- **Error arms**: `"error400"` [400] no body · `"errorDefault"` [default — any status no arm above covers] no body · `"undeclared"` [a `default`-matched response that carried a body] `rawBody: ArrayBuffer`
 
 **Fields** — `PetApi.DeletePetRequest` (2):
 
@@ -58,8 +60,8 @@ Accessor: `client.petApi` · Source: `src/resources/pet-api.ts` · 8 operations 
 - **Auth**: `petstoreAuth`
 - **Request body**: none — no `Content-Type` header is sent
 - **Returns**: `Pet[]` — a bare `application/json` array; the success type *is* the array, not a wrapper model
-- **Error**: `PetApi.FindPetsByStatusError` — **typed arms**, narrowed on `err.payload.kind`
-- **Error arms**: `"error400"` [400] no body · `"errorDefault"` [400–599] no body · `"undeclared"` [any other] `rawBody: ArrayBuffer`
+- **Error**: `SwaggerPetstoreOpenApi30Error` with `kind: "api"`, an instance of `PetApi.FindPetsByStatusError` — **typed arms**, narrowed on `err.payload.kind`
+- **Error arms**: `"error400"` [400] no body · `"errorDefault"` [default — any status no arm above covers] no body · `"undeclared"` [a `default`-matched response that carried a body] `rawBody: ArrayBuffer`
 
 **Fields** — `PetApi.FindPetsByStatusRequest` (1):
 
@@ -79,8 +81,8 @@ Accessor: `client.petApi` · Source: `src/resources/pet-api.ts` · 8 operations 
 - **Auth**: `petstoreAuth`
 - **Request body**: none — no `Content-Type` header is sent
 - **Returns**: `Pet[]` — a bare `application/json` array; the success type *is* the array, not a wrapper model
-- **Error**: `PetApi.FindPetsByTagsError` — **typed arms**, narrowed on `err.payload.kind`
-- **Error arms**: `"error400"` [400] no body · `"errorDefault"` [400–599] no body · `"undeclared"` [any other] `rawBody: ArrayBuffer`
+- **Error**: `SwaggerPetstoreOpenApi30Error` with `kind: "api"`, an instance of `PetApi.FindPetsByTagsError` — **typed arms**, narrowed on `err.payload.kind`
+- **Error arms**: `"error400"` [400] no body · `"errorDefault"` [default — any status no arm above covers] no body · `"undeclared"` [a `default`-matched response that carried a body] `rawBody: ArrayBuffer`
 
 **Fields** — `PetApi.FindPetsByTagsRequest` (1):
 
@@ -99,8 +101,8 @@ Accessor: `client.petApi` · Source: `src/resources/pet-api.ts` · 8 operations 
 - **Auth**: any of `apiKey`, `petstoreAuth` — the first one configured is sent
 - **Request body**: none — no `Content-Type` header is sent
 - **Returns**: `Pet`
-- **Error**: `PetApi.GetPetByIdError` — **typed arms**, narrowed on `err.payload.kind`
-- **Error arms**: `"error400"` [400] no body · `"error404"` [404] no body · `"errorDefault"` [400–599] no body · `"undeclared"` [any other] `rawBody: ArrayBuffer`
+- **Error**: `SwaggerPetstoreOpenApi30Error` with `kind: "api"`, an instance of `PetApi.GetPetByIdError` — **typed arms**, narrowed on `err.payload.kind`
+- **Error arms**: `"error400"` [400] no body · `"error404"` [404] no body · `"errorDefault"` [default — any status no arm above covers] no body · `"undeclared"` [a `default`-matched response that carried a body] `rawBody: ArrayBuffer`
 
 **Fields** — `PetApi.GetPetByIdRequest` (1):
 
@@ -118,9 +120,10 @@ Accessor: `client.petApi` · Source: `src/resources/pet-api.ts` · 8 operations 
 - **Wire**: `PUT /pet`
 - **Auth**: `petstoreAuth`
 - **Request body**: `application/x-www-form-urlencoded;charset=UTF-8` — every field marked `form`
+- **SDK-sent**: `header Idempotency-Key` (minted per call)
 - **Returns**: `Pet`
-- **Error**: `PetApi.UpdatePetError` — **typed arms**, narrowed on `err.payload.kind`
-- **Error arms**: `"error400"` [400] no body · `"error404"` [404] no body · `"error422"` [422] no body · `"errorDefault"` [400–599] no body · `"undeclared"` [any other] `rawBody: ArrayBuffer`
+- **Error**: `SwaggerPetstoreOpenApi30Error` with `kind: "api"`, an instance of `PetApi.UpdatePetError` — **typed arms**, narrowed on `err.payload.kind`
+- **Error arms**: `"error400"` [400] no body · `"error404"` [404] no body · `"error422"` [422] no body · `"errorDefault"` [default — any status no arm above covers] no body · `"undeclared"` [a `default`-matched response that carried a body] `rawBody: ArrayBuffer`
 
 **Fields** — `PetApi.UpdatePetRequest` (6):
 
@@ -146,9 +149,10 @@ Accessor: `client.petApi` · Source: `src/resources/pet-api.ts` · 8 operations 
 - **Wire**: `POST /pet/{petId}`
 - **Auth**: `petstoreAuth`
 - **Request body**: none — no `Content-Type` header is sent
+- **SDK-sent**: `header Idempotency-Key` (minted per call)
 - **Returns**: `Pet`
-- **Error**: `PetApi.UpdatePetWithFormError` — **typed arms**, narrowed on `err.payload.kind`
-- **Error arms**: `"error400"` [400] no body · `"errorDefault"` [400–599] no body · `"undeclared"` [any other] `rawBody: ArrayBuffer`
+- **Error**: `SwaggerPetstoreOpenApi30Error` with `kind: "api"`, an instance of `PetApi.UpdatePetWithFormError` — **typed arms**, narrowed on `err.payload.kind`
+- **Error arms**: `"error400"` [400] no body · `"errorDefault"` [default — any status no arm above covers] no body · `"undeclared"` [a `default`-matched response that carried a body] `rawBody: ArrayBuffer`
 
 **Fields** — `PetApi.UpdatePetWithFormRequest` (3):
 
@@ -168,9 +172,10 @@ Accessor: `client.petApi` · Source: `src/resources/pet-api.ts` · 8 operations 
 - **Wire**: `POST /pet/{petId}/uploadImage`
 - **Auth**: `petstoreAuth`
 - **Request body**: `application/octet-stream` — the `body` field, sent as raw bytes with no schema over them. That media type is what the SDK declares; a value carrying its own wins outright. **Optional**: omit it and the request carries no body and no `Content-Type` header at all
+- **SDK-sent**: `header Idempotency-Key` (minted per call)
 - **Returns**: `ApiResponse`
-- **Error**: `PetApi.UploadFileError` — **typed arms**, narrowed on `err.payload.kind`
-- **Error arms**: `"error400"` [400] no body · `"error404"` [404] no body · `"errorDefault"` [400–599] no body · `"undeclared"` [any other] `rawBody: ArrayBuffer`
+- **Error**: `SwaggerPetstoreOpenApi30Error` with `kind: "api"`, an instance of `PetApi.UploadFileError` — **typed arms**, narrowed on `err.payload.kind`
+- **Error arms**: `"error400"` [400] no body · `"error404"` [404] no body · `"errorDefault"` [default — any status no arm above covers] no body · `"undeclared"` [a `default`-matched response that carried a body] `rawBody: ArrayBuffer`
 
 **Fields** — `PetApi.UploadFileRequest` (3):
 

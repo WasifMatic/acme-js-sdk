@@ -38,7 +38,7 @@ function cachedTokenScheme<TToken extends OAuthToken>(
   let cached: { token: TToken; expiresAt: number } | undefined;
   let inflight: Promise<TToken> | undefined;
 
-  async function load(signal: AbortSignal): Promise<TToken> {
+  async function obtainAndCacheToken(signal: AbortSignal): Promise<TToken> {
     try {
       const token = await acquire(signal, cached?.token);
       cached = { token, expiresAt: expiryOf(token) };
@@ -51,7 +51,7 @@ function cachedTokenScheme<TToken extends OAuthToken>(
   return {
     async resolve(signal) {
       if (cached !== undefined && Date.now() < cached.expiresAt) return bearer(cached.token);
-      inflight ??= load(signal);
+      inflight ??= obtainAndCacheToken(signal);
       return bearer(await inflight);
     },
     hasCredentials: () => true,

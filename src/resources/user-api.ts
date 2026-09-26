@@ -1,8 +1,9 @@
+import { ApiError, type Declared, type ErrorDecoders, type ErrorPayload } from "../core/api-error.js";
 import type { ApiPromise } from "../core/api-promise.js";
 import type { RequestOptions } from "../core/api-request.js";
 import { noneAuth } from "../core/auth/schemes.js";
 import type { RawClient } from "../core/raw-client.js";
-import { ResponseError, type Declared, type ErrorDecoders } from "../core/response-error.js";
+import { uuid } from "../core/uuid.js";
 import * as s from "../core/validation/index.js";
 import { userSchema, type User } from "../models/user.js";
 import type { Servers } from "../servers.js";
@@ -31,8 +32,8 @@ export class UserApi {
    * `err.payload.kind`
    *
    * @throws {@link SwaggerPetstoreOpenApi30Error} when no usable response was produced: a
-   * connection failure, a timeout, an abort, a schema violation, or a credential that could not be
-   * obtained
+   * connection failure, a timeout, a body that would not decode, a value that would not encode, or
+   * a credential that could not be obtained
    */
   createUser(
     request: UserApi.CreateUserRequest,
@@ -43,6 +44,7 @@ export class UserApi {
         method: "POST",
         url: this.#servers.default("/user"),
         auth: noneAuth,
+        headers: [{ name: "Idempotency-Key", value: uuid(), schema: s.string() }],
         body: {
           kind: "formUrlEncoded",
           value: [
@@ -77,8 +79,8 @@ export class UserApi {
    * — narrow on `err.payload.kind`
    *
    * @throws {@link SwaggerPetstoreOpenApi30Error} when no usable response was produced: a
-   * connection failure, a timeout, an abort, a schema violation, or a credential that could not be
-   * obtained
+   * connection failure, a timeout, a body that would not decode, a value that would not encode, or
+   * a credential that could not be obtained
    */
   createUsersWithListInput(
     request: UserApi.CreateUsersWithListInputRequest,
@@ -89,6 +91,7 @@ export class UserApi {
         method: "POST",
         url: this.#servers.default("/user/createWithList"),
         auth: noneAuth,
+        headers: [{ name: "Idempotency-Key", value: uuid(), schema: s.string() }],
         body: { kind: "json", value: request.body, schema: s.optional(s.array(s.lazy(() => userSchema))) },
       },
       {
@@ -111,8 +114,8 @@ export class UserApi {
    * `err.payload.kind`
    *
    * @throws {@link SwaggerPetstoreOpenApi30Error} when no usable response was produced: a
-   * connection failure, a timeout, an abort, a schema violation, or a credential that could not be
-   * obtained
+   * connection failure, a timeout, a body that would not decode, a value that would not encode, or
+   * a credential that could not be obtained
    */
   deleteUser(
     request: UserApi.DeleteUserRequest,
@@ -124,6 +127,7 @@ export class UserApi {
         url: this.#servers.default("/user/{usersname}"),
         auth: noneAuth,
         pathParams: [{ name: "usersname", value: request.usersname, schema: s.string() }],
+        headers: [{ name: "Idempotency-Key", value: uuid(), schema: s.string() }],
         body: { kind: "empty" },
       },
       {
@@ -146,8 +150,8 @@ export class UserApi {
    * on `err.payload.kind`
    *
    * @throws {@link SwaggerPetstoreOpenApi30Error} when no usable response was produced: a
-   * connection failure, a timeout, an abort, a schema violation, or a credential that could not be
-   * obtained
+   * connection failure, a timeout, a body that would not decode, a value that would not encode, or
+   * a credential that could not be obtained
    */
   getUserByName(
     request: UserApi.GetUserByNameRequest,
@@ -181,8 +185,8 @@ export class UserApi {
    * `err.payload.kind`
    *
    * @throws {@link SwaggerPetstoreOpenApi30Error} when no usable response was produced: a
-   * connection failure, a timeout, an abort, a schema violation, or a credential that could not be
-   * obtained
+   * connection failure, a timeout, a body that would not decode, a value that would not encode, or
+   * a credential that could not be obtained
    */
   loginUser(
     request: UserApi.LoginUserRequest,
@@ -219,8 +223,8 @@ export class UserApi {
    * `err.payload.kind`
    *
    * @throws {@link SwaggerPetstoreOpenApi30Error} when no usable response was produced: a
-   * connection failure, a timeout, an abort, a schema violation, or a credential that could not be
-   * obtained
+   * connection failure, a timeout, a body that would not decode, a value that would not encode, or
+   * a credential that could not be obtained
    */
   logoutUser(options?: RequestOptions): ApiPromise<undefined, UserApi.LogoutUserError> {
     return this.#rawClient.execute(
@@ -250,8 +254,8 @@ export class UserApi {
    * `err.payload.kind`
    *
    * @throws {@link SwaggerPetstoreOpenApi30Error} when no usable response was produced: a
-   * connection failure, a timeout, an abort, a schema violation, or a credential that could not be
-   * obtained
+   * connection failure, a timeout, a body that would not decode, a value that would not encode, or
+   * a credential that could not be obtained
    */
   updateUser(
     request: UserApi.UpdateUserRequest,
@@ -263,6 +267,7 @@ export class UserApi {
         url: this.#servers.default("/user/{usersname}"),
         auth: noneAuth,
         pathParams: [{ name: "usersname", value: request.usersname, schema: s.string() }],
+        headers: [{ name: "Idempotency-Key", value: uuid(), schema: s.string() }],
         body: {
           kind: "formUrlEncoded",
           value: [
@@ -299,9 +304,11 @@ export namespace UserApi {
     userStatus?: number;
   };
 
-  export class CreateUserError extends ResponseError<Declared<"errorDefault", undefined>> {
+  export class CreateUserError extends ApiError {
+    declare readonly payload: ErrorPayload<Declared<"errorDefault", undefined>>;
+
     static readonly errors: ErrorDecoders<CreateUserError> = [
-      { on: [400, 599], kind: "errorDefault", decode: { kind: "empty" } },
+      { on: "default", kind: "errorDefault", decode: { kind: "empty" } },
     ];
   }
 
@@ -309,9 +316,11 @@ export namespace UserApi {
     body?: User[];
   };
 
-  export class CreateUsersWithListInputError extends ResponseError<Declared<"errorDefault", undefined>> {
+  export class CreateUsersWithListInputError extends ApiError {
+    declare readonly payload: ErrorPayload<Declared<"errorDefault", undefined>>;
+
     static readonly errors: ErrorDecoders<CreateUsersWithListInputError> = [
-      { on: [400, 599], kind: "errorDefault", decode: { kind: "empty" } },
+      { on: "default", kind: "errorDefault", decode: { kind: "empty" } },
     ];
   }
 
@@ -320,13 +329,15 @@ export namespace UserApi {
     usersname: string;
   };
 
-  export class DeleteUserError extends ResponseError<
-    Declared<"error400", undefined> | Declared<"error404", undefined> | Declared<"errorDefault", undefined>
-  > {
+  export class DeleteUserError extends ApiError {
+    declare readonly payload: ErrorPayload<
+      Declared<"error400", undefined> | Declared<"error404", undefined> | Declared<"errorDefault", undefined>
+    >;
+
     static readonly errors: ErrorDecoders<DeleteUserError> = [
       { on: 400, kind: "error400", decode: { kind: "empty" } },
       { on: 404, kind: "error404", decode: { kind: "empty" } },
-      { on: [400, 599], kind: "errorDefault", decode: { kind: "empty" } },
+      { on: "default", kind: "errorDefault", decode: { kind: "empty" } },
     ];
   }
 
@@ -335,13 +346,15 @@ export namespace UserApi {
     usersname: string;
   };
 
-  export class GetUserByNameError extends ResponseError<
-    Declared<"error400", undefined> | Declared<"error404", undefined> | Declared<"errorDefault", undefined>
-  > {
+  export class GetUserByNameError extends ApiError {
+    declare readonly payload: ErrorPayload<
+      Declared<"error400", undefined> | Declared<"error404", undefined> | Declared<"errorDefault", undefined>
+    >;
+
     static readonly errors: ErrorDecoders<GetUserByNameError> = [
       { on: 400, kind: "error400", decode: { kind: "empty" } },
       { on: 404, kind: "error404", decode: { kind: "empty" } },
-      { on: [400, 599], kind: "errorDefault", decode: { kind: "empty" } },
+      { on: "default", kind: "errorDefault", decode: { kind: "empty" } },
     ];
   }
 
@@ -352,18 +365,22 @@ export namespace UserApi {
     password?: string;
   };
 
-  export class LoginUserError extends ResponseError<
-    Declared<"error400", undefined> | Declared<"errorDefault", undefined>
-  > {
+  export class LoginUserError extends ApiError {
+    declare readonly payload: ErrorPayload<
+      Declared<"error400", undefined> | Declared<"errorDefault", undefined>
+    >;
+
     static readonly errors: ErrorDecoders<LoginUserError> = [
       { on: 400, kind: "error400", decode: { kind: "empty" } },
-      { on: [400, 599], kind: "errorDefault", decode: { kind: "empty" } },
+      { on: "default", kind: "errorDefault", decode: { kind: "empty" } },
     ];
   }
 
-  export class LogoutUserError extends ResponseError<Declared<"errorDefault", undefined>> {
+  export class LogoutUserError extends ApiError {
+    declare readonly payload: ErrorPayload<Declared<"errorDefault", undefined>>;
+
     static readonly errors: ErrorDecoders<LogoutUserError> = [
-      { on: [400, 599], kind: "errorDefault", decode: { kind: "empty" } },
+      { on: "default", kind: "errorDefault", decode: { kind: "empty" } },
     ];
   }
 
@@ -381,13 +398,15 @@ export namespace UserApi {
     userStatus?: number;
   };
 
-  export class UpdateUserError extends ResponseError<
-    Declared<"error400", undefined> | Declared<"error404", undefined> | Declared<"errorDefault", undefined>
-  > {
+  export class UpdateUserError extends ApiError {
+    declare readonly payload: ErrorPayload<
+      Declared<"error400", undefined> | Declared<"error404", undefined> | Declared<"errorDefault", undefined>
+    >;
+
     static readonly errors: ErrorDecoders<UpdateUserError> = [
       { on: 400, kind: "error400", decode: { kind: "empty" } },
       { on: 404, kind: "error404", decode: { kind: "empty" } },
-      { on: [400, 599], kind: "errorDefault", decode: { kind: "empty" } },
+      { on: "default", kind: "errorDefault", decode: { kind: "empty" } },
     ];
   }
 }

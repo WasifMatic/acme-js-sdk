@@ -2,27 +2,34 @@ import type { UrlTemplate } from "./api-request.js";
 import type { StyledParam, Param } from "./param-value.js";
 import { encodedParam, flattenValue } from "./param-value.js";
 import { percentEncode, queryString } from "./params.js";
-import { SdkError } from "./errors.js";
 
-export function buildUrl(
+export function resolveUri(
   template: UrlTemplate,
   pathParams: readonly Param[] | undefined,
-  query: readonly StyledParam[] | undefined,
-  defaultQuery: readonly StyledParam[],
   defaultPathParams?: readonly Param[],
-  authQuery?: readonly StyledParam[],
 ): URL {
   const resolvedBase = expandVariables(template.baseUrl, template.variables);
   const path = expandPath(template.subPath, pathParams, defaultPathParams);
-  const url = new URL(joinUrl(resolvedBase, path));
-  const search = queryString([defaultQuery, query, authQuery], [...url.searchParams]);
+  return new URL(joinUrl(resolvedBase, path));
+}
+
+export function templateUri(template: UrlTemplate): string {
+  return joinUrl(expandVariables(template.baseUrl, template.variables), template.subPath);
+}
+
+export function applyQuery(
+  url: URL,
+  query: readonly StyledParam[] | undefined,
+  defaultQuery: readonly StyledParam[],
+): void {
+  const search = queryString([defaultQuery, query], [...url.searchParams]);
   if (search) url.search = search;
-  return url;
 }
 
 function expandVariables(template: string, variables: Record<string, string> | undefined): string {
   let out = template;
   for (const [key, value] of Object.entries(variables ?? {})) {
+    if (value === undefined) continue;
     out = out.replaceAll(`{${key}}`, percentEncode(value));
   }
   return out;
@@ -44,9 +51,7 @@ function expandPath(template: string, ...layers: ReadonlyArray<readonly Param[] 
   }
   for (const name of skipped) {
     if (!out.includes(`{${name}}`)) continue;
-    throw new SdkError({
-      message: `Path parameter "${name}" resolved to undefined and left {${name}} unfilled.`,
-    });
+    throw new TypeError(`Path parameter "${name}" resolved to undefined and left {${name}} unfilled.`);
   }
   return out;
 }

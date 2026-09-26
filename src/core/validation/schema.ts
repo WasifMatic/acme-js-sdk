@@ -35,7 +35,9 @@ export type Shape<T> = { [K in keyof T]-?: Entry<T[K]> } & { readonly _keysMap?:
  * @remarks
  * Both directions are complete on their own — one call each, never a pair. `decode` accepts the
  * wire form only and `encode` the SDK form only, so passing one direction's value to the other is
- * rejected rather than waved through. A failure throws `SchemaError`.
+ * rejected rather than waved through. A failure throws `SchemaError`; through an operation the
+ * same failure reaches you one level down, on the `cause` of a `DecodeError` or an
+ * `EncodeError`, which name the call.
  *
  * Validation is **structural**: types, shape, and required keys. Value constraints such as
  * `minLength`, `pattern` or enum membership are the service's to enforce, and the SDK does not

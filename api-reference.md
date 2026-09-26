@@ -29,7 +29,7 @@ Add a new pet to the store.
 
 ```ts
 try {
-  const response = await client.petApi.addPet({ name, photoUrls });
+  const response = await client.petApi.addPet({ name: "doggie", photoUrls: ["some example string"], id: 10 });
   // TODO: Handle 'response' of type Pet
 } catch (err) {
   // TODO: Handle 'err' of type PetApi.AddPetError, discriminated with 'err.payload.kind'
@@ -45,12 +45,16 @@ try {
 <dd>
 
 ```ts
-const result = await client.petApi.addPet({ name, photoUrls }).asApiResult();
+const result = await client.petApi.addPet({
+  name: "doggie",
+  photoUrls: ["some example string"],
+  id: 10,
+}).asApiResult();
 // TODO: Use 'result.status' and 'result.headers' to read the raw response status and headers
 if (result.ok) {
   // TODO: Use 'result.value' of type Pet
 } else {
-  // TODO: Use 'result.errorMessage' and 'result.error', discriminated with 'result.error.kind'
+  // TODO: Handle 'result', discriminated with 'result.payload.kind'
 }
 ```
 
@@ -87,9 +91,9 @@ if (result.ok) {
 **As ApiResult**: `await client.petApi.addPet(request).asApiResult()`
 
 - **OnSuccess**: <code>[ApiResult](src/core/api-promise.ts)&lt;Pet, PetApi.AddPetError&gt;</code>, with `result.value` of type <code>[Pet](src/models/pet.ts)</code>
-- **OnError**: `result.error` discriminated on `kind`, with `result.errorMessage`
+- **OnError**: `result.payload` discriminated on `kind`, with `result.message`
 
-**Always thrown**: <code>[SwaggerPetstoreOpenApi30Error](src/core/errors.ts)</code>
+**Thrown**: <code>[SwaggerPetstoreOpenApi30Error](src/core/errors.ts)</code> on any operational failure — a caller abort and a programmer error stay outside the family and reach you raw
 
 </dd>
 </dl>
@@ -122,7 +126,7 @@ Delete a pet.
 
 ```ts
 try {
-  await client.petApi.deletePet({ petId });
+  await client.petApi.deletePet({ petId: 10 });
 } catch (err) {
   // TODO: Handle 'err' of type PetApi.DeletePetError, discriminated with 'err.payload.kind'
 }
@@ -137,12 +141,12 @@ try {
 <dd>
 
 ```ts
-const result = await client.petApi.deletePet({ petId }).asApiResult();
+const result = await client.petApi.deletePet({ petId: 10 }).asApiResult();
 // TODO: Use 'result.status' and 'result.headers' to read the raw response status and headers
 if (result.ok) {
   // TODO: The call succeeded and resolves to no body
 } else {
-  // TODO: Use 'result.errorMessage' and 'result.error', discriminated with 'result.error.kind'
+  // TODO: Handle 'result', discriminated with 'result.payload.kind'
 }
 ```
 
@@ -175,9 +179,9 @@ if (result.ok) {
 **As ApiResult**: `await client.petApi.deletePet(request).asApiResult()`
 
 - **OnSuccess**: <code>[ApiResult](src/core/api-promise.ts)&lt;undefined, PetApi.DeletePetError&gt;</code>, with `result.value` of type <code>undefined</code>
-- **OnError**: `result.error` discriminated on `kind`, with `result.errorMessage`
+- **OnError**: `result.payload` discriminated on `kind`, with `result.message`
 
-**Always thrown**: <code>[SwaggerPetstoreOpenApi30Error](src/core/errors.ts)</code>
+**Thrown**: <code>[SwaggerPetstoreOpenApi30Error](src/core/errors.ts)</code> on any operational failure — a caller abort and a programmer error stay outside the family and reach you raw
 
 </dd>
 </dl>
@@ -231,7 +235,7 @@ const result = await client.petApi.findPetsByStatus().asApiResult();
 if (result.ok) {
   // TODO: Use 'result.value' of type Pet[]
 } else {
-  // TODO: Use 'result.errorMessage' and 'result.error', discriminated with 'result.error.kind'
+  // TODO: Handle 'result', discriminated with 'result.payload.kind'
 }
 ```
 
@@ -263,9 +267,9 @@ if (result.ok) {
 **As ApiResult**: `await client.petApi.findPetsByStatus(request).asApiResult()`
 
 - **OnSuccess**: <code>[ApiResult](src/core/api-promise.ts)&lt;Pet[], PetApi.FindPetsByStatusError&gt;</code>, with `result.value` of type <code>[Pet](src/models/pet.ts)[]</code>
-- **OnError**: `result.error` discriminated on `kind`, with `result.errorMessage`
+- **OnError**: `result.payload` discriminated on `kind`, with `result.message`
 
-**Always thrown**: <code>[SwaggerPetstoreOpenApi30Error](src/core/errors.ts)</code>
+**Thrown**: <code>[SwaggerPetstoreOpenApi30Error](src/core/errors.ts)</code> on any operational failure — a caller abort and a programmer error stay outside the family and reach you raw
 
 </dd>
 </dl>
@@ -319,7 +323,7 @@ const result = await client.petApi.findPetsByTags().asApiResult();
 if (result.ok) {
   // TODO: Use 'result.value' of type Pet[]
 } else {
-  // TODO: Use 'result.errorMessage' and 'result.error', discriminated with 'result.error.kind'
+  // TODO: Handle 'result', discriminated with 'result.payload.kind'
 }
 ```
 
@@ -351,9 +355,9 @@ if (result.ok) {
 **As ApiResult**: `await client.petApi.findPetsByTags(request).asApiResult()`
 
 - **OnSuccess**: <code>[ApiResult](src/core/api-promise.ts)&lt;Pet[], PetApi.FindPetsByTagsError&gt;</code>, with `result.value` of type <code>[Pet](src/models/pet.ts)[]</code>
-- **OnError**: `result.error` discriminated on `kind`, with `result.errorMessage`
+- **OnError**: `result.payload` discriminated on `kind`, with `result.message`
 
-**Always thrown**: <code>[SwaggerPetstoreOpenApi30Error](src/core/errors.ts)</code>
+**Thrown**: <code>[SwaggerPetstoreOpenApi30Error](src/core/errors.ts)</code> on any operational failure — a caller abort and a programmer error stay outside the family and reach you raw
 
 </dd>
 </dl>
@@ -386,7 +390,7 @@ Returns a single pet.
 
 ```ts
 try {
-  const response = await client.petApi.getPetById({ petId });
+  const response = await client.petApi.getPetById({ petId: 10 });
   // TODO: Handle 'response' of type Pet
 } catch (err) {
   // TODO: Handle 'err' of type PetApi.GetPetByIdError, discriminated with 'err.payload.kind'
@@ -402,12 +406,12 @@ try {
 <dd>
 
 ```ts
-const result = await client.petApi.getPetById({ petId }).asApiResult();
+const result = await client.petApi.getPetById({ petId: 10 }).asApiResult();
 // TODO: Use 'result.status' and 'result.headers' to read the raw response status and headers
 if (result.ok) {
   // TODO: Use 'result.value' of type Pet
 } else {
-  // TODO: Use 'result.errorMessage' and 'result.error', discriminated with 'result.error.kind'
+  // TODO: Handle 'result', discriminated with 'result.payload.kind'
 }
 ```
 
@@ -439,9 +443,9 @@ if (result.ok) {
 **As ApiResult**: `await client.petApi.getPetById(request).asApiResult()`
 
 - **OnSuccess**: <code>[ApiResult](src/core/api-promise.ts)&lt;Pet, PetApi.GetPetByIdError&gt;</code>, with `result.value` of type <code>[Pet](src/models/pet.ts)</code>
-- **OnError**: `result.error` discriminated on `kind`, with `result.errorMessage`
+- **OnError**: `result.payload` discriminated on `kind`, with `result.message`
 
-**Always thrown**: <code>[SwaggerPetstoreOpenApi30Error](src/core/errors.ts)</code>
+**Thrown**: <code>[SwaggerPetstoreOpenApi30Error](src/core/errors.ts)</code> on any operational failure — a caller abort and a programmer error stay outside the family and reach you raw
 
 </dd>
 </dl>
@@ -474,7 +478,11 @@ Update an existing pet by Id.
 
 ```ts
 try {
-  const response = await client.petApi.updatePet({ name, photoUrls });
+  const response = await client.petApi.updatePet({
+    name: "doggie",
+    photoUrls: ["some example string"],
+    id: 10,
+  });
   // TODO: Handle 'response' of type Pet
 } catch (err) {
   // TODO: Handle 'err' of type PetApi.UpdatePetError, discriminated with 'err.payload.kind'
@@ -490,12 +498,16 @@ try {
 <dd>
 
 ```ts
-const result = await client.petApi.updatePet({ name, photoUrls }).asApiResult();
+const result = await client.petApi.updatePet({
+  name: "doggie",
+  photoUrls: ["some example string"],
+  id: 10,
+}).asApiResult();
 // TODO: Use 'result.status' and 'result.headers' to read the raw response status and headers
 if (result.ok) {
   // TODO: Use 'result.value' of type Pet
 } else {
-  // TODO: Use 'result.errorMessage' and 'result.error', discriminated with 'result.error.kind'
+  // TODO: Handle 'result', discriminated with 'result.payload.kind'
 }
 ```
 
@@ -532,9 +544,9 @@ if (result.ok) {
 **As ApiResult**: `await client.petApi.updatePet(request).asApiResult()`
 
 - **OnSuccess**: <code>[ApiResult](src/core/api-promise.ts)&lt;Pet, PetApi.UpdatePetError&gt;</code>, with `result.value` of type <code>[Pet](src/models/pet.ts)</code>
-- **OnError**: `result.error` discriminated on `kind`, with `result.errorMessage`
+- **OnError**: `result.payload` discriminated on `kind`, with `result.message`
 
-**Always thrown**: <code>[SwaggerPetstoreOpenApi30Error](src/core/errors.ts)</code>
+**Thrown**: <code>[SwaggerPetstoreOpenApi30Error](src/core/errors.ts)</code> on any operational failure — a caller abort and a programmer error stay outside the family and reach you raw
 
 </dd>
 </dl>
@@ -567,7 +579,7 @@ Updates a pet resource based on the form data.
 
 ```ts
 try {
-  const response = await client.petApi.updatePetWithForm({ petId });
+  const response = await client.petApi.updatePetWithForm({ petId: 10 });
   // TODO: Handle 'response' of type Pet
 } catch (err) {
   // TODO: Handle 'err' of type PetApi.UpdatePetWithFormError, discriminated with 'err.payload.kind'
@@ -583,12 +595,12 @@ try {
 <dd>
 
 ```ts
-const result = await client.petApi.updatePetWithForm({ petId }).asApiResult();
+const result = await client.petApi.updatePetWithForm({ petId: 10 }).asApiResult();
 // TODO: Use 'result.status' and 'result.headers' to read the raw response status and headers
 if (result.ok) {
   // TODO: Use 'result.value' of type Pet
 } else {
-  // TODO: Use 'result.errorMessage' and 'result.error', discriminated with 'result.error.kind'
+  // TODO: Handle 'result', discriminated with 'result.payload.kind'
 }
 ```
 
@@ -622,9 +634,9 @@ if (result.ok) {
 **As ApiResult**: `await client.petApi.updatePetWithForm(request).asApiResult()`
 
 - **OnSuccess**: <code>[ApiResult](src/core/api-promise.ts)&lt;Pet, PetApi.UpdatePetWithFormError&gt;</code>, with `result.value` of type <code>[Pet](src/models/pet.ts)</code>
-- **OnError**: `result.error` discriminated on `kind`, with `result.errorMessage`
+- **OnError**: `result.payload` discriminated on `kind`, with `result.message`
 
-**Always thrown**: <code>[SwaggerPetstoreOpenApi30Error](src/core/errors.ts)</code>
+**Thrown**: <code>[SwaggerPetstoreOpenApi30Error](src/core/errors.ts)</code> on any operational failure — a caller abort and a programmer error stay outside the family and reach you raw
 
 </dd>
 </dl>
@@ -657,7 +669,7 @@ Upload image of the pet.
 
 ```ts
 try {
-  const response = await client.petApi.uploadFile({ petId });
+  const response = await client.petApi.uploadFile({ petId: 10 });
   // TODO: Handle 'response' of type ApiResponse
 } catch (err) {
   // TODO: Handle 'err' of type PetApi.UploadFileError, discriminated with 'err.payload.kind'
@@ -673,12 +685,12 @@ try {
 <dd>
 
 ```ts
-const result = await client.petApi.uploadFile({ petId }).asApiResult();
+const result = await client.petApi.uploadFile({ petId: 10 }).asApiResult();
 // TODO: Use 'result.status' and 'result.headers' to read the raw response status and headers
 if (result.ok) {
   // TODO: Use 'result.value' of type ApiResponse
 } else {
-  // TODO: Use 'result.errorMessage' and 'result.error', discriminated with 'result.error.kind'
+  // TODO: Handle 'result', discriminated with 'result.payload.kind'
 }
 ```
 
@@ -712,9 +724,9 @@ if (result.ok) {
 **As ApiResult**: `await client.petApi.uploadFile(request).asApiResult()`
 
 - **OnSuccess**: <code>[ApiResult](src/core/api-promise.ts)&lt;ApiResponse, PetApi.UploadFileError&gt;</code>, with `result.value` of type <code>[ApiResponse](src/models/api-response.ts)</code>
-- **OnError**: `result.error` discriminated on `kind`, with `result.errorMessage`
+- **OnError**: `result.payload` discriminated on `kind`, with `result.message`
 
-**Always thrown**: <code>[SwaggerPetstoreOpenApi30Error](src/core/errors.ts)</code>
+**Thrown**: <code>[SwaggerPetstoreOpenApi30Error](src/core/errors.ts)</code> on any operational failure — a caller abort and a programmer error stay outside the family and reach you raw
 
 </dd>
 </dl>
@@ -751,7 +763,7 @@ For valid response try integer IDs with value < 1000. Anything above 1000 or non
 
 ```ts
 try {
-  await client.store.deleteOrder({ orderId });
+  await client.store.deleteOrder({ orderId: 1 });
 } catch (err) {
   // TODO: Handle 'err' of type Store.DeleteOrderError, discriminated with 'err.payload.kind'
 }
@@ -766,12 +778,12 @@ try {
 <dd>
 
 ```ts
-const result = await client.store.deleteOrder({ orderId }).asApiResult();
+const result = await client.store.deleteOrder({ orderId: 1 }).asApiResult();
 // TODO: Use 'result.status' and 'result.headers' to read the raw response status and headers
 if (result.ok) {
   // TODO: The call succeeded and resolves to no body
 } else {
-  // TODO: Use 'result.errorMessage' and 'result.error', discriminated with 'result.error.kind'
+  // TODO: Handle 'result', discriminated with 'result.payload.kind'
 }
 ```
 
@@ -803,9 +815,9 @@ if (result.ok) {
 **As ApiResult**: `await client.store.deleteOrder(request).asApiResult()`
 
 - **OnSuccess**: <code>[ApiResult](src/core/api-promise.ts)&lt;undefined, Store.DeleteOrderError&gt;</code>, with `result.value` of type <code>undefined</code>
-- **OnError**: `result.error` discriminated on `kind`, with `result.errorMessage`
+- **OnError**: `result.payload` discriminated on `kind`, with `result.message`
 
-**Always thrown**: <code>[SwaggerPetstoreOpenApi30Error](src/core/errors.ts)</code>
+**Thrown**: <code>[SwaggerPetstoreOpenApi30Error](src/core/errors.ts)</code> on any operational failure — a caller abort and a programmer error stay outside the family and reach you raw
 
 </dd>
 </dl>
@@ -859,7 +871,7 @@ const result = await client.store.getInventory().asApiResult();
 if (result.ok) {
   // TODO: Use 'result.value' of type Record<string, number>
 } else {
-  // TODO: Use 'result.errorMessage' and 'result.error', discriminated with 'result.error.kind'
+  // TODO: Handle 'result', discriminated with 'result.payload.kind'
 }
 ```
 
@@ -879,9 +891,9 @@ if (result.ok) {
 **As ApiResult**: `await client.store.getInventory().asApiResult()`
 
 - **OnSuccess**: <code>[ApiResult](src/core/api-promise.ts)&lt;Record&lt;string, number&gt;, Store.GetInventoryError&gt;</code>, with `result.value` of type <code>Record&lt;string, number&gt;</code>
-- **OnError**: `result.error` discriminated on `kind`, with `result.errorMessage`
+- **OnError**: `result.payload` discriminated on `kind`, with `result.message`
 
-**Always thrown**: <code>[SwaggerPetstoreOpenApi30Error](src/core/errors.ts)</code>
+**Thrown**: <code>[SwaggerPetstoreOpenApi30Error](src/core/errors.ts)</code> on any operational failure — a caller abort and a programmer error stay outside the family and reach you raw
 
 </dd>
 </dl>
@@ -914,7 +926,7 @@ For valid response try integer IDs with value <= 5 or > 10. Other values will ge
 
 ```ts
 try {
-  const response = await client.store.getOrderById({ orderId });
+  const response = await client.store.getOrderById({ orderId: 1 });
   // TODO: Handle 'response' of type Order
 } catch (err) {
   // TODO: Handle 'err' of type Store.GetOrderByIdError, discriminated with 'err.payload.kind'
@@ -930,12 +942,12 @@ try {
 <dd>
 
 ```ts
-const result = await client.store.getOrderById({ orderId }).asApiResult();
+const result = await client.store.getOrderById({ orderId: 1 }).asApiResult();
 // TODO: Use 'result.status' and 'result.headers' to read the raw response status and headers
 if (result.ok) {
   // TODO: Use 'result.value' of type Order
 } else {
-  // TODO: Use 'result.errorMessage' and 'result.error', discriminated with 'result.error.kind'
+  // TODO: Handle 'result', discriminated with 'result.payload.kind'
 }
 ```
 
@@ -967,9 +979,9 @@ if (result.ok) {
 **As ApiResult**: `await client.store.getOrderById(request).asApiResult()`
 
 - **OnSuccess**: <code>[ApiResult](src/core/api-promise.ts)&lt;Order, Store.GetOrderByIdError&gt;</code>, with `result.value` of type <code>[Order](src/models/order.ts)</code>
-- **OnError**: `result.error` discriminated on `kind`, with `result.errorMessage`
+- **OnError**: `result.payload` discriminated on `kind`, with `result.message`
 
-**Always thrown**: <code>[SwaggerPetstoreOpenApi30Error](src/core/errors.ts)</code>
+**Thrown**: <code>[SwaggerPetstoreOpenApi30Error](src/core/errors.ts)</code> on any operational failure — a caller abort and a programmer error stay outside the family and reach you raw
 
 </dd>
 </dl>
@@ -1002,7 +1014,7 @@ Place a new order in the store.
 
 ```ts
 try {
-  const response = await client.store.placeOrder();
+  const response = await client.store.placeOrder({ id: 10, petId: 198772, quantity: 7 });
   // TODO: Handle 'response' of type Order
 } catch (err) {
   // TODO: Handle 'err' of type Store.PlaceOrderError, discriminated with 'err.payload.kind'
@@ -1018,12 +1030,12 @@ try {
 <dd>
 
 ```ts
-const result = await client.store.placeOrder().asApiResult();
+const result = await client.store.placeOrder({ id: 10, petId: 198772, quantity: 7 }).asApiResult();
 // TODO: Use 'result.status' and 'result.headers' to read the raw response status and headers
 if (result.ok) {
   // TODO: Use 'result.value' of type Order
 } else {
-  // TODO: Use 'result.errorMessage' and 'result.error', discriminated with 'result.error.kind'
+  // TODO: Handle 'result', discriminated with 'result.payload.kind'
 }
 ```
 
@@ -1060,9 +1072,9 @@ if (result.ok) {
 **As ApiResult**: `await client.store.placeOrder(request).asApiResult()`
 
 - **OnSuccess**: <code>[ApiResult](src/core/api-promise.ts)&lt;Order, Store.PlaceOrderError&gt;</code>, with `result.value` of type <code>[Order](src/models/order.ts)</code>
-- **OnError**: `result.error` discriminated on `kind`, with `result.errorMessage`
+- **OnError**: `result.payload` discriminated on `kind`, with `result.message`
 
-**Always thrown**: <code>[SwaggerPetstoreOpenApi30Error](src/core/errors.ts)</code>
+**Thrown**: <code>[SwaggerPetstoreOpenApi30Error](src/core/errors.ts)</code> on any operational failure — a caller abort and a programmer error stay outside the family and reach you raw
 
 </dd>
 </dl>
@@ -1099,7 +1111,16 @@ This can only be done by the logged in user.
 
 ```ts
 try {
-  const response = await client.userApi.createUser();
+  const response = await client.userApi.createUser({
+    id: 10,
+    username: "theUser",
+    firstName: "John",
+    lastName: "James",
+    email: "john@email.com",
+    password: "12345",
+    phone: "12345",
+    userStatus: 1,
+  });
   // TODO: Handle 'response' of type User
 } catch (err) {
   // TODO: Handle 'err' of type UserApi.CreateUserError, discriminated with 'err.payload.kind'
@@ -1115,12 +1136,21 @@ try {
 <dd>
 
 ```ts
-const result = await client.userApi.createUser().asApiResult();
+const result = await client.userApi.createUser({
+  id: 10,
+  username: "theUser",
+  firstName: "John",
+  lastName: "James",
+  email: "john@email.com",
+  password: "12345",
+  phone: "12345",
+  userStatus: 1,
+}).asApiResult();
 // TODO: Use 'result.status' and 'result.headers' to read the raw response status and headers
 if (result.ok) {
   // TODO: Use 'result.value' of type User
 } else {
-  // TODO: Use 'result.errorMessage' and 'result.error', discriminated with 'result.error.kind'
+  // TODO: Handle 'result', discriminated with 'result.payload.kind'
 }
 ```
 
@@ -1159,9 +1189,9 @@ if (result.ok) {
 **As ApiResult**: `await client.userApi.createUser(request).asApiResult()`
 
 - **OnSuccess**: <code>[ApiResult](src/core/api-promise.ts)&lt;User, UserApi.CreateUserError&gt;</code>, with `result.value` of type <code>[User](src/models/user.ts)</code>
-- **OnError**: `result.error` discriminated on `kind`, with `result.errorMessage`
+- **OnError**: `result.payload` discriminated on `kind`, with `result.message`
 
-**Always thrown**: <code>[SwaggerPetstoreOpenApi30Error](src/core/errors.ts)</code>
+**Thrown**: <code>[SwaggerPetstoreOpenApi30Error](src/core/errors.ts)</code> on any operational failure — a caller abort and a programmer error stay outside the family and reach you raw
 
 </dd>
 </dl>
@@ -1215,7 +1245,7 @@ const result = await client.userApi.createUsersWithListInput().asApiResult();
 if (result.ok) {
   // TODO: Use 'result.value' of type User
 } else {
-  // TODO: Use 'result.errorMessage' and 'result.error', discriminated with 'result.error.kind'
+  // TODO: Handle 'result', discriminated with 'result.payload.kind'
 }
 ```
 
@@ -1247,9 +1277,9 @@ if (result.ok) {
 **As ApiResult**: `await client.userApi.createUsersWithListInput(request).asApiResult()`
 
 - **OnSuccess**: <code>[ApiResult](src/core/api-promise.ts)&lt;User, UserApi.CreateUsersWithListInputError&gt;</code>, with `result.value` of type <code>[User](src/models/user.ts)</code>
-- **OnError**: `result.error` discriminated on `kind`, with `result.errorMessage`
+- **OnError**: `result.payload` discriminated on `kind`, with `result.message`
 
-**Always thrown**: <code>[SwaggerPetstoreOpenApi30Error](src/core/errors.ts)</code>
+**Thrown**: <code>[SwaggerPetstoreOpenApi30Error](src/core/errors.ts)</code> on any operational failure — a caller abort and a programmer error stay outside the family and reach you raw
 
 </dd>
 </dl>
@@ -1282,7 +1312,7 @@ This can only be done by the logged in user.
 
 ```ts
 try {
-  await client.userApi.deleteUser({ usersname });
+  await client.userApi.deleteUser({ usersname: "some example string" });
 } catch (err) {
   // TODO: Handle 'err' of type UserApi.DeleteUserError, discriminated with 'err.payload.kind'
 }
@@ -1297,12 +1327,12 @@ try {
 <dd>
 
 ```ts
-const result = await client.userApi.deleteUser({ usersname }).asApiResult();
+const result = await client.userApi.deleteUser({ usersname: "some example string" }).asApiResult();
 // TODO: Use 'result.status' and 'result.headers' to read the raw response status and headers
 if (result.ok) {
   // TODO: The call succeeded and resolves to no body
 } else {
-  // TODO: Use 'result.errorMessage' and 'result.error', discriminated with 'result.error.kind'
+  // TODO: Handle 'result', discriminated with 'result.payload.kind'
 }
 ```
 
@@ -1334,9 +1364,9 @@ if (result.ok) {
 **As ApiResult**: `await client.userApi.deleteUser(request).asApiResult()`
 
 - **OnSuccess**: <code>[ApiResult](src/core/api-promise.ts)&lt;undefined, UserApi.DeleteUserError&gt;</code>, with `result.value` of type <code>undefined</code>
-- **OnError**: `result.error` discriminated on `kind`, with `result.errorMessage`
+- **OnError**: `result.payload` discriminated on `kind`, with `result.message`
 
-**Always thrown**: <code>[SwaggerPetstoreOpenApi30Error](src/core/errors.ts)</code>
+**Thrown**: <code>[SwaggerPetstoreOpenApi30Error](src/core/errors.ts)</code> on any operational failure — a caller abort and a programmer error stay outside the family and reach you raw
 
 </dd>
 </dl>
@@ -1369,7 +1399,7 @@ Get user detail based on username.
 
 ```ts
 try {
-  const response = await client.userApi.getUserByName({ usersname });
+  const response = await client.userApi.getUserByName({ usersname: "some example string" });
   // TODO: Handle 'response' of type User
 } catch (err) {
   // TODO: Handle 'err' of type UserApi.GetUserByNameError, discriminated with 'err.payload.kind'
@@ -1385,12 +1415,12 @@ try {
 <dd>
 
 ```ts
-const result = await client.userApi.getUserByName({ usersname }).asApiResult();
+const result = await client.userApi.getUserByName({ usersname: "some example string" }).asApiResult();
 // TODO: Use 'result.status' and 'result.headers' to read the raw response status and headers
 if (result.ok) {
   // TODO: Use 'result.value' of type User
 } else {
-  // TODO: Use 'result.errorMessage' and 'result.error', discriminated with 'result.error.kind'
+  // TODO: Handle 'result', discriminated with 'result.payload.kind'
 }
 ```
 
@@ -1422,9 +1452,9 @@ if (result.ok) {
 **As ApiResult**: `await client.userApi.getUserByName(request).asApiResult()`
 
 - **OnSuccess**: <code>[ApiResult](src/core/api-promise.ts)&lt;User, UserApi.GetUserByNameError&gt;</code>, with `result.value` of type <code>[User](src/models/user.ts)</code>
-- **OnError**: `result.error` discriminated on `kind`, with `result.errorMessage`
+- **OnError**: `result.payload` discriminated on `kind`, with `result.message`
 
-**Always thrown**: <code>[SwaggerPetstoreOpenApi30Error](src/core/errors.ts)</code>
+**Thrown**: <code>[SwaggerPetstoreOpenApi30Error](src/core/errors.ts)</code> on any operational failure — a caller abort and a programmer error stay outside the family and reach you raw
 
 </dd>
 </dl>
@@ -1477,7 +1507,7 @@ const result = await client.userApi.loginUser().asApiResult();
 if (result.ok) {
   // TODO: The call succeeded and resolves to no body
 } else {
-  // TODO: Use 'result.errorMessage' and 'result.error', discriminated with 'result.error.kind'
+  // TODO: Handle 'result', discriminated with 'result.payload.kind'
 }
 ```
 
@@ -1510,9 +1540,9 @@ if (result.ok) {
 **As ApiResult**: `await client.userApi.loginUser(request).asApiResult()`
 
 - **OnSuccess**: <code>[ApiResult](src/core/api-promise.ts)&lt;undefined, UserApi.LoginUserError&gt;</code>, with `result.value` of type <code>undefined</code>
-- **OnError**: `result.error` discriminated on `kind`, with `result.errorMessage`
+- **OnError**: `result.payload` discriminated on `kind`, with `result.message`
 
-**Always thrown**: <code>[SwaggerPetstoreOpenApi30Error](src/core/errors.ts)</code>
+**Thrown**: <code>[SwaggerPetstoreOpenApi30Error](src/core/errors.ts)</code> on any operational failure — a caller abort and a programmer error stay outside the family and reach you raw
 
 </dd>
 </dl>
@@ -1565,7 +1595,7 @@ const result = await client.userApi.logoutUser().asApiResult();
 if (result.ok) {
   // TODO: The call succeeded and resolves to no body
 } else {
-  // TODO: Use 'result.errorMessage' and 'result.error', discriminated with 'result.error.kind'
+  // TODO: Handle 'result', discriminated with 'result.payload.kind'
 }
 ```
 
@@ -1585,9 +1615,9 @@ if (result.ok) {
 **As ApiResult**: `await client.userApi.logoutUser().asApiResult()`
 
 - **OnSuccess**: <code>[ApiResult](src/core/api-promise.ts)&lt;undefined, UserApi.LogoutUserError&gt;</code>, with `result.value` of type <code>undefined</code>
-- **OnError**: `result.error` discriminated on `kind`, with `result.errorMessage`
+- **OnError**: `result.payload` discriminated on `kind`, with `result.message`
 
-**Always thrown**: <code>[SwaggerPetstoreOpenApi30Error](src/core/errors.ts)</code>
+**Thrown**: <code>[SwaggerPetstoreOpenApi30Error](src/core/errors.ts)</code> on any operational failure — a caller abort and a programmer error stay outside the family and reach you raw
 
 </dd>
 </dl>
@@ -1620,7 +1650,17 @@ This can only be done by the logged in user.
 
 ```ts
 try {
-  await client.userApi.updateUser({ usersname });
+  await client.userApi.updateUser({
+    usersname: "some example string",
+    id: 10,
+    username: "theUser",
+    firstName: "John",
+    lastName: "James",
+    email: "john@email.com",
+    password: "12345",
+    phone: "12345",
+    userStatus: 1,
+  });
 } catch (err) {
   // TODO: Handle 'err' of type UserApi.UpdateUserError, discriminated with 'err.payload.kind'
 }
@@ -1635,12 +1675,22 @@ try {
 <dd>
 
 ```ts
-const result = await client.userApi.updateUser({ usersname }).asApiResult();
+const result = await client.userApi.updateUser({
+  usersname: "some example string",
+  id: 10,
+  username: "theUser",
+  firstName: "John",
+  lastName: "James",
+  email: "john@email.com",
+  password: "12345",
+  phone: "12345",
+  userStatus: 1,
+}).asApiResult();
 // TODO: Use 'result.status' and 'result.headers' to read the raw response status and headers
 if (result.ok) {
   // TODO: The call succeeded and resolves to no body
 } else {
-  // TODO: Use 'result.errorMessage' and 'result.error', discriminated with 'result.error.kind'
+  // TODO: Handle 'result', discriminated with 'result.payload.kind'
 }
 ```
 
@@ -1680,9 +1730,9 @@ if (result.ok) {
 **As ApiResult**: `await client.userApi.updateUser(request).asApiResult()`
 
 - **OnSuccess**: <code>[ApiResult](src/core/api-promise.ts)&lt;undefined, UserApi.UpdateUserError&gt;</code>, with `result.value` of type <code>undefined</code>
-- **OnError**: `result.error` discriminated on `kind`, with `result.errorMessage`
+- **OnError**: `result.payload` discriminated on `kind`, with `result.message`
 
-**Always thrown**: <code>[SwaggerPetstoreOpenApi30Error](src/core/errors.ts)</code>
+**Thrown**: <code>[SwaggerPetstoreOpenApi30Error](src/core/errors.ts)</code> on any operational failure — a caller abort and a programmer error stay outside the family and reach you raw
 
 </dd>
 </dl>

@@ -1,4 +1,5 @@
-import { ConnectionError, CoreError, SdkError } from "./errors.js";
+import { ConnectionError, CoreError, DecodeError } from "./errors.js";
+import type { HttpMethod } from "./api-request.js";
 import type { RequestDeadline } from "./deadline.js";
 import type { BinaryResponseDecoder } from "./response-decoder.js";
 
@@ -22,8 +23,7 @@ import type { BinaryResponseDecoder } from "./response-decoder.js";
  * The async-iterable arm is what a Node stream satisfies, so `createReadStream(path)` can be
  * passed straight in and is forwarded chunk by chunk rather than buffered, under that same
  * one-shot rule. It is spelled structurally on purpose: naming Node's `Readable` would put
- * `@types/node` in the published declarations, which the DOM typecheck lane exists to prevent
- * (ADR-0049).
+ * `@types/node` in the published declarations, which the DOM typecheck lane exists to prevent.
  */
 export type BinaryData =
   | Blob
@@ -50,18 +50,6 @@ export type FileData = {
 /** A file to send: bare {@link BinaryData} bytes, or a {@link FileData} that names them. */
 export type FileInput = BinaryData | FileData;
 
-/**
- * A {@link FileInput} reduced to what the transport needs, once it is known to be buffered.
- *
- * @remarks
- * "Buffered" means replayable and length-known, not held in memory: `openAsBlob(path)` gives a
- * file-backed `Blob` that qualifies without ever being read into RAM. A multipart body whose every
- * file part resolves to this arm is framed by the platform `FormData` and sent with a
- * `Content-Length`.
- *
- * Engine-level and named in an exported function's return type, exactly as {@link ResolvedFile}
- * is, so the same rule applies: it must stay in the emitted `.d.ts`.
- */
 export type BufferedResolvedFile = {
   readonly body: Blob | Uint8Array<ArrayBuffer>;
   readonly contentType: string | undefined;
@@ -69,14 +57,6 @@ export type BufferedResolvedFile = {
   readonly streaming: false;
 };
 
-/**
- * A {@link FileInput} reduced to what the transport needs, once it is known to stream.
- *
- * @remarks
- * The body is sent as it is produced under `duplex: "half"` and cannot be replayed. As a whole body
- * it is the request; as a multipart file part it turns the whole form into one hand-framed chunked
- * stream, because the platform's `FormData` takes only a `Blob` or a string.
- */
 export type StreamingResolvedFile = {
   readonly body: ReadableStream<Uint8Array>;
   readonly contentType: string | undefined;
@@ -84,23 +64,8 @@ export type StreamingResolvedFile = {
   readonly streaming: true;
 };
 
-/**
- * A {@link FileInput} reduced to what the transport needs: the buffered arm or the streaming one.
- *
- * @remarks
- * Engine-level, but named in the return type of an exported function, so it is part of the public
- * type surface. Marking it internal would erase the declaration out from under the emitted
- * `.d.ts` while leaving the reference behind, which the packaging guard catches.
- */
 export type ResolvedFile = BufferedResolvedFile | StreamingResolvedFile;
 
-/**
- * Bytes the engine can read in order: a buffered chunk, a `Blob`, or a stream.
- *
- * @remarks
- * The two {@link ResolvedFile} bodies are its halves; a hand-framed multipart envelope is a list of
- * these, header chunks interleaved with file bodies.
- */
 export type ByteSource = Blob | Uint8Array<ArrayBuffer> | ReadableStream<Uint8Array>;
 
 /**
@@ -151,6 +116,8 @@ export function readBinary(
   decoder: BinaryResponseDecoder,
   response: Response,
   deadline: RequestDeadline,
+  method: HttpMethod,
+  uri: string,
 ): BinaryContent {
   const contentType = response.headers.get("content-type") ?? decoder.contentType;
   const fileName = parseFileName(response.headers.get("content-disposition"));
@@ -160,16 +127,30 @@ export function readBinary(
 
   const reader = source.getReader();
   const stop = deadline.transfer();
-  return { stream: guardStream(reader, deadline.signal, stop), contentType, fileName };
+  return {
+    stream: guardStream(reader, deadline.signal, stop, method, uri),
+    contentType,
+    fileName,
+  };
 }
 
-export async function readBinaryError(response: Response): Promise<BinaryErrorContent> {
+export async function readBinaryError(
+  response: Response,
+  method: HttpMethod,
+  uri: string,
+): Promise<BinaryErrorContent> {
   let buffer: ArrayBuffer;
   try {
     buffer = await response.arrayBuffer();
   } catch (err) {
     if (err instanceof CoreError) throw err;
-    throw new ConnectionError({ message: "Response body could not be read.", cause: err });
+    throw new DecodeError(`${method} ${uri} failed: Response body could not be read.`, {
+      cause: err,
+      method,
+      uri,
+      status: response.status,
+      headers: response.headers,
+    });
   }
   return {
     bytes: new Uint8Array(buffer),
@@ -234,6 +215,8 @@ function guardStream(
   reader: ReadableStreamDefaultReader<Uint8Array<ArrayBuffer>>,
   signal: AbortSignal,
   stop: () => void,
+  method: HttpMethod,
+  uri: string,
 ): ReadableStream<Uint8Array<ArrayBuffer>> {
   let sink: ReadableStreamDefaultController<Uint8Array<ArrayBuffer>> | undefined;
   let settled = false;
@@ -247,7 +230,7 @@ function guardStream(
 
   const onAbort = (): void => {
     if (!settle()) return;
-    sink?.error(readFailure(signal.reason));
+    sink?.error(signal.reason);
     void reader.cancel(signal.reason).catch(() => {});
   };
 
@@ -267,7 +250,7 @@ function guardStream(
         }
         controller.enqueue(value);
       } catch (err) {
-        if (settle()) controller.error(readFailure(err));
+        if (settle()) controller.error(readFailure(err, method, uri));
       }
     },
     cancel: async (reason) => {
@@ -277,9 +260,12 @@ function guardStream(
   });
 }
 
-function readFailure(reason: unknown): CoreError {
-  if (reason instanceof CoreError) return reason;
-  return new ConnectionError({ message: "Response body could not be read.", cause: reason });
+function readFailure(reason: unknown, method: HttpMethod, uri: string): ConnectionError {
+  return new ConnectionError(`${method} ${uri} failed: Response body could not be read.`, {
+    cause: reason,
+    method,
+    uri,
+  });
 }
 
 function emptyStream(): ReadableStream<Uint8Array<ArrayBuffer>> {
@@ -433,13 +419,12 @@ function isAsyncIterable(data: unknown): data is AsyncIterable<Uint8Array<ArrayB
   return typeof data === "object" && data !== null && Symbol.asyncIterator in data;
 }
 
-function unusableBinaryData(data: unknown): SdkError {
-  return new SdkError({
-    message:
-      `A file body must be a Blob, Uint8Array, ArrayBuffer, ReadableStream or an async iterable of ` +
+function unusableBinaryData(data: unknown): TypeError {
+  return new TypeError(
+    `A file body must be a Blob, Uint8Array, ArrayBuffer, ReadableStream or an async iterable of ` +
       `bytes, or a { data } wrapper around one — received ${receivedType(data)}. A filesystem path is ` +
       `not a file body: open it with createReadStream(path), or read it with await openAsBlob(path).`,
-  });
+  );
 }
 
 function receivedType(data: unknown): string {

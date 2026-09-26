@@ -1,4 +1,3 @@
-import { SdkError } from "./errors.js";
 import type { Entry } from "./validation/schema.js";
 import { encodeEntry } from "./validation/schema-error.js";
 
@@ -82,7 +81,7 @@ function joined(key: string, values: readonly ParamValue[], separator: string): 
 }
 
 function unknownStyle(style: never): never {
-  throw new SdkError({ message: `Unknown parameter style: ${String(style)}.` });
+  throw new TypeError(`Unknown parameter style: ${String(style)}.`);
 }
 
 export function isScalar(value: ParamValue): value is string | number | boolean | bigint {

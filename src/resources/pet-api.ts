@@ -1,10 +1,11 @@
 import type { AuthSchemes } from "../auth-schemes.js";
+import { ApiError, type Declared, type ErrorDecoders, type ErrorPayload } from "../core/api-error.js";
 import type { ApiPromise } from "../core/api-promise.js";
 import type { RequestOptions } from "../core/api-request.js";
 import { anyAuth } from "../core/auth/schemes.js";
 import type { FileInput } from "../core/binary.js";
 import type { RawClient } from "../core/raw-client.js";
-import { ResponseError, type Declared, type ErrorDecoders } from "../core/response-error.js";
+import { uuid } from "../core/uuid.js";
 import * as s from "../core/validation/index.js";
 import { apiResponseSchema, type ApiResponse } from "../models/api-response.js";
 import { categorySchema, type Category } from "../models/category.js";
@@ -39,8 +40,8 @@ export class PetApi {
    * `err.payload.kind`
    *
    * @throws {@link SwaggerPetstoreOpenApi30Error} when no usable response was produced: a
-   * connection failure, a timeout, an abort, a schema violation, or a credential that could not be
-   * obtained
+   * connection failure, a timeout, a body that would not decode, a value that would not encode, or
+   * a credential that could not be obtained
    */
   addPet(request: PetApi.AddPetRequest, options?: RequestOptions): ApiPromise<Pet, PetApi.AddPetError> {
     return this.#rawClient.execute(
@@ -48,6 +49,7 @@ export class PetApi {
         method: "POST",
         url: this.#servers.default("/pet"),
         auth: this.#auth.petstoreAuth,
+        headers: [{ name: "Idempotency-Key", value: uuid(), schema: s.string() }],
         body: {
           kind: "formUrlEncoded",
           value: [
@@ -80,8 +82,8 @@ export class PetApi {
    * `err.payload.kind`
    *
    * @throws {@link SwaggerPetstoreOpenApi30Error} when no usable response was produced: a
-   * connection failure, a timeout, an abort, a schema violation, or a credential that could not be
-   * obtained
+   * connection failure, a timeout, a body that would not decode, a value that would not encode, or
+   * a credential that could not be obtained
    */
   deletePet(
     request: PetApi.DeletePetRequest,
@@ -93,7 +95,10 @@ export class PetApi {
         url: this.#servers.default("/pet/{petId}"),
         auth: this.#auth.petstoreAuth,
         pathParams: [{ name: "petId", value: request.petId, schema: s.number() }],
-        headers: [{ name: "api_key", value: request.apiKey, schema: s.optional(s.string()) }],
+        headers: [
+          { name: "api_key", value: request.apiKey, schema: s.optional(s.string()) },
+          { name: "Idempotency-Key", value: uuid(), schema: s.string() },
+        ],
         body: { kind: "empty" },
       },
       {
@@ -116,8 +121,8 @@ export class PetApi {
    * on `err.payload.kind`
    *
    * @throws {@link SwaggerPetstoreOpenApi30Error} when no usable response was produced: a
-   * connection failure, a timeout, an abort, a schema violation, or a credential that could not be
-   * obtained
+   * connection failure, a timeout, a body that would not decode, a value that would not encode, or
+   * a credential that could not be obtained
    */
   findPetsByStatus(
     request: PetApi.FindPetsByStatusRequest,
@@ -151,8 +156,8 @@ export class PetApi {
    * on `err.payload.kind`
    *
    * @throws {@link SwaggerPetstoreOpenApi30Error} when no usable response was produced: a
-   * connection failure, a timeout, an abort, a schema violation, or a credential that could not be
-   * obtained
+   * connection failure, a timeout, a body that would not decode, a value that would not encode, or
+   * a credential that could not be obtained
    */
   findPetsByTags(
     request: PetApi.FindPetsByTagsRequest,
@@ -186,8 +191,8 @@ export class PetApi {
    * `err.payload.kind`
    *
    * @throws {@link SwaggerPetstoreOpenApi30Error} when no usable response was produced: a
-   * connection failure, a timeout, an abort, a schema violation, or a credential that could not be
-   * obtained
+   * connection failure, a timeout, a body that would not decode, a value that would not encode, or
+   * a credential that could not be obtained
    */
   getPetById(
     request: PetApi.GetPetByIdRequest,
@@ -221,8 +226,8 @@ export class PetApi {
    * `err.payload.kind`
    *
    * @throws {@link SwaggerPetstoreOpenApi30Error} when no usable response was produced: a
-   * connection failure, a timeout, an abort, a schema violation, or a credential that could not be
-   * obtained
+   * connection failure, a timeout, a body that would not decode, a value that would not encode, or
+   * a credential that could not be obtained
    */
   updatePet(
     request: PetApi.UpdatePetRequest,
@@ -233,6 +238,7 @@ export class PetApi {
         method: "PUT",
         url: this.#servers.default("/pet"),
         auth: this.#auth.petstoreAuth,
+        headers: [{ name: "Idempotency-Key", value: uuid(), schema: s.string() }],
         body: {
           kind: "formUrlEncoded",
           value: [
@@ -265,8 +271,8 @@ export class PetApi {
    * narrow on `err.payload.kind`
    *
    * @throws {@link SwaggerPetstoreOpenApi30Error} when no usable response was produced: a
-   * connection failure, a timeout, an abort, a schema violation, or a credential that could not be
-   * obtained
+   * connection failure, a timeout, a body that would not decode, a value that would not encode, or
+   * a credential that could not be obtained
    */
   updatePetWithForm(
     request: PetApi.UpdatePetWithFormRequest,
@@ -282,6 +288,7 @@ export class PetApi {
           { name: "name", value: request.name, schema: s.optional(s.string()) },
           { name: "status", value: request.status, schema: s.optional(s.string()) },
         ],
+        headers: [{ name: "Idempotency-Key", value: uuid(), schema: s.string() }],
         body: { kind: "empty" },
       },
       {
@@ -304,8 +311,8 @@ export class PetApi {
    * `err.payload.kind`
    *
    * @throws {@link SwaggerPetstoreOpenApi30Error} when no usable response was produced: a
-   * connection failure, a timeout, an abort, a schema violation, or a credential that could not be
-   * obtained
+   * connection failure, a timeout, a body that would not decode, a value that would not encode, or
+   * a credential that could not be obtained
    */
   uploadFile(
     request: PetApi.UploadFileRequest,
@@ -320,6 +327,7 @@ export class PetApi {
         query: [
           { name: "additionalMetadata", value: request.additionalMetadata, schema: s.optional(s.string()) },
         ],
+        headers: [{ name: "Idempotency-Key", value: uuid(), schema: s.string() }],
         body: { kind: "binary", value: request.body, contentType: "application/octet-stream" },
       },
       {
@@ -342,13 +350,15 @@ export namespace PetApi {
     status?: PetStatus;
   };
 
-  export class AddPetError extends ResponseError<
-    Declared<"error400", undefined> | Declared<"error422", undefined> | Declared<"errorDefault", undefined>
-  > {
+  export class AddPetError extends ApiError {
+    declare readonly payload: ErrorPayload<
+      Declared<"error400", undefined> | Declared<"error422", undefined> | Declared<"errorDefault", undefined>
+    >;
+
     static readonly errors: ErrorDecoders<AddPetError> = [
       { on: 400, kind: "error400", decode: { kind: "empty" } },
       { on: 422, kind: "error422", decode: { kind: "empty" } },
-      { on: [400, 599], kind: "errorDefault", decode: { kind: "empty" } },
+      { on: "default", kind: "errorDefault", decode: { kind: "empty" } },
     ];
   }
 
@@ -358,12 +368,14 @@ export namespace PetApi {
     apiKey?: string;
   };
 
-  export class DeletePetError extends ResponseError<
-    Declared<"error400", undefined> | Declared<"errorDefault", undefined>
-  > {
+  export class DeletePetError extends ApiError {
+    declare readonly payload: ErrorPayload<
+      Declared<"error400", undefined> | Declared<"errorDefault", undefined>
+    >;
+
     static readonly errors: ErrorDecoders<DeletePetError> = [
       { on: 400, kind: "error400", decode: { kind: "empty" } },
-      { on: [400, 599], kind: "errorDefault", decode: { kind: "empty" } },
+      { on: "default", kind: "errorDefault", decode: { kind: "empty" } },
     ];
   }
 
@@ -372,12 +384,14 @@ export namespace PetApi {
     status?: PetStatus;
   };
 
-  export class FindPetsByStatusError extends ResponseError<
-    Declared<"error400", undefined> | Declared<"errorDefault", undefined>
-  > {
+  export class FindPetsByStatusError extends ApiError {
+    declare readonly payload: ErrorPayload<
+      Declared<"error400", undefined> | Declared<"errorDefault", undefined>
+    >;
+
     static readonly errors: ErrorDecoders<FindPetsByStatusError> = [
       { on: 400, kind: "error400", decode: { kind: "empty" } },
-      { on: [400, 599], kind: "errorDefault", decode: { kind: "empty" } },
+      { on: "default", kind: "errorDefault", decode: { kind: "empty" } },
     ];
   }
 
@@ -386,12 +400,14 @@ export namespace PetApi {
     tags?: string[];
   };
 
-  export class FindPetsByTagsError extends ResponseError<
-    Declared<"error400", undefined> | Declared<"errorDefault", undefined>
-  > {
+  export class FindPetsByTagsError extends ApiError {
+    declare readonly payload: ErrorPayload<
+      Declared<"error400", undefined> | Declared<"errorDefault", undefined>
+    >;
+
     static readonly errors: ErrorDecoders<FindPetsByTagsError> = [
       { on: 400, kind: "error400", decode: { kind: "empty" } },
-      { on: [400, 599], kind: "errorDefault", decode: { kind: "empty" } },
+      { on: "default", kind: "errorDefault", decode: { kind: "empty" } },
     ];
   }
 
@@ -400,13 +416,15 @@ export namespace PetApi {
     petId: number;
   };
 
-  export class GetPetByIdError extends ResponseError<
-    Declared<"error400", undefined> | Declared<"error404", undefined> | Declared<"errorDefault", undefined>
-  > {
+  export class GetPetByIdError extends ApiError {
+    declare readonly payload: ErrorPayload<
+      Declared<"error400", undefined> | Declared<"error404", undefined> | Declared<"errorDefault", undefined>
+    >;
+
     static readonly errors: ErrorDecoders<GetPetByIdError> = [
       { on: 400, kind: "error400", decode: { kind: "empty" } },
       { on: 404, kind: "error404", decode: { kind: "empty" } },
-      { on: [400, 599], kind: "errorDefault", decode: { kind: "empty" } },
+      { on: "default", kind: "errorDefault", decode: { kind: "empty" } },
     ];
   }
 
@@ -420,17 +438,19 @@ export namespace PetApi {
     status?: PetStatus;
   };
 
-  export class UpdatePetError extends ResponseError<
-    | Declared<"error400", undefined>
-    | Declared<"error404", undefined>
-    | Declared<"error422", undefined>
-    | Declared<"errorDefault", undefined>
-  > {
+  export class UpdatePetError extends ApiError {
+    declare readonly payload: ErrorPayload<
+      | Declared<"error400", undefined>
+      | Declared<"error404", undefined>
+      | Declared<"error422", undefined>
+      | Declared<"errorDefault", undefined>
+    >;
+
     static readonly errors: ErrorDecoders<UpdatePetError> = [
       { on: 400, kind: "error400", decode: { kind: "empty" } },
       { on: 404, kind: "error404", decode: { kind: "empty" } },
       { on: 422, kind: "error422", decode: { kind: "empty" } },
-      { on: [400, 599], kind: "errorDefault", decode: { kind: "empty" } },
+      { on: "default", kind: "errorDefault", decode: { kind: "empty" } },
     ];
   }
 
@@ -443,12 +463,14 @@ export namespace PetApi {
     status?: string;
   };
 
-  export class UpdatePetWithFormError extends ResponseError<
-    Declared<"error400", undefined> | Declared<"errorDefault", undefined>
-  > {
+  export class UpdatePetWithFormError extends ApiError {
+    declare readonly payload: ErrorPayload<
+      Declared<"error400", undefined> | Declared<"errorDefault", undefined>
+    >;
+
     static readonly errors: ErrorDecoders<UpdatePetWithFormError> = [
       { on: 400, kind: "error400", decode: { kind: "empty" } },
-      { on: [400, 599], kind: "errorDefault", decode: { kind: "empty" } },
+      { on: "default", kind: "errorDefault", decode: { kind: "empty" } },
     ];
   }
 
@@ -460,13 +482,15 @@ export namespace PetApi {
     body?: FileInput;
   };
 
-  export class UploadFileError extends ResponseError<
-    Declared<"error400", undefined> | Declared<"error404", undefined> | Declared<"errorDefault", undefined>
-  > {
+  export class UploadFileError extends ApiError {
+    declare readonly payload: ErrorPayload<
+      Declared<"error400", undefined> | Declared<"error404", undefined> | Declared<"errorDefault", undefined>
+    >;
+
     static readonly errors: ErrorDecoders<UploadFileError> = [
       { on: 400, kind: "error400", decode: { kind: "empty" } },
       { on: 404, kind: "error404", decode: { kind: "empty" } },
-      { on: [400, 599], kind: "errorDefault", decode: { kind: "empty" } },
+      { on: "default", kind: "errorDefault", decode: { kind: "empty" } },
     ];
   }
 }

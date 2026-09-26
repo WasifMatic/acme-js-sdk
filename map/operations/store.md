@@ -4,7 +4,7 @@
 
 Accessor: `client.store` · Source: `src/resources/store.ts` · 4 operations · Request and error types: namespace `Store`
 
-**Type sources**: every type an operation names, with the file that declares it and the schema value exported beside it. Import every name from `automated-package-publishing-sdk`; the `Source` path is where to **read** the shape, never what to import. `ResponseError`, the runtime error family and the file vocabulary are excluded — see sdk-map.md.
+**Type sources**: every type an operation names, with the file that declares it and the schema value exported beside it. Import every name from `swagger-petstore-open-api-3-0`; the `Source` path is where to **read** the shape, never what to import. `ApiError`, the runtime error family and the file vocabulary are excluded — see sdk-map.md.
 
 ### deleteOrder
 
@@ -12,9 +12,10 @@ Accessor: `client.store` · Source: `src/resources/store.ts` · 4 operations · 
 - **Wire**: `DELETE /store/order/{orderId}`
 - **Auth**: none — public; no credential is sent
 - **Request body**: none — no `Content-Type` header is sent
+- **SDK-sent**: `header Idempotency-Key` (minted per call)
 - **Returns**: `undefined` — the operation resolves to nothing
-- **Error**: `Store.DeleteOrderError` — **typed arms**, narrowed on `err.payload.kind`
-- **Error arms**: `"error400"` [400] no body · `"error404"` [404] no body · `"errorDefault"` [400–599] no body · `"undeclared"` [any other] `rawBody: ArrayBuffer`
+- **Error**: `SwaggerPetstoreOpenApi30Error` with `kind: "api"`, an instance of `Store.DeleteOrderError` — **typed arms**, narrowed on `err.payload.kind`
+- **Error arms**: `"error400"` [400] no body · `"error404"` [404] no body · `"errorDefault"` [default — any status no arm above covers] no body · `"undeclared"` [a `default`-matched response that carried a body] `rawBody: ArrayBuffer`
 
 **Fields** — `Store.DeleteOrderRequest` (1):
 
@@ -29,8 +30,8 @@ Accessor: `client.store` · Source: `src/resources/store.ts` · 4 operations · 
 - **Auth**: `apiKey`
 - **Request body**: none — no `Content-Type` header is sent
 - **Returns**: `Record<string, number>` — a bare `application/json` map; the success type *is* the map
-- **Error**: `Store.GetInventoryError` — **typed arms**, narrowed on `err.payload.kind`
-- **Error arms**: `"errorDefault"` [400–599] no body · `"undeclared"` [any other] `rawBody: ArrayBuffer`
+- **Error**: `SwaggerPetstoreOpenApi30Error` with `kind: "api"`, an instance of `Store.GetInventoryError` — **typed arms**, narrowed on `err.payload.kind`
+- **Error arms**: `"errorDefault"` [default — any status no arm above covers] no body · `"undeclared"` [a `default`-matched response that carried a body] `rawBody: ArrayBuffer`
 
 ### getOrderById
 
@@ -39,8 +40,8 @@ Accessor: `client.store` · Source: `src/resources/store.ts` · 4 operations · 
 - **Auth**: none — public; no credential is sent
 - **Request body**: none — no `Content-Type` header is sent
 - **Returns**: `Order`
-- **Error**: `Store.GetOrderByIdError` — **typed arms**, narrowed on `err.payload.kind`
-- **Error arms**: `"error400"` [400] no body · `"error404"` [404] no body · `"errorDefault"` [400–599] no body · `"undeclared"` [any other] `rawBody: ArrayBuffer`
+- **Error**: `SwaggerPetstoreOpenApi30Error` with `kind: "api"`, an instance of `Store.GetOrderByIdError` — **typed arms**, narrowed on `err.payload.kind`
+- **Error arms**: `"error400"` [400] no body · `"error404"` [404] no body · `"errorDefault"` [default — any status no arm above covers] no body · `"undeclared"` [a `default`-matched response that carried a body] `rawBody: ArrayBuffer`
 
 **Fields** — `Store.GetOrderByIdRequest` (1):
 
@@ -58,9 +59,10 @@ Accessor: `client.store` · Source: `src/resources/store.ts` · 4 operations · 
 - **Wire**: `POST /store/order`
 - **Auth**: none — public; no credential is sent
 - **Request body**: `application/x-www-form-urlencoded;charset=UTF-8` — every field marked `form`
+- **SDK-sent**: `header Idempotency-Key` (minted per call)
 - **Returns**: `Order`
-- **Error**: `Store.PlaceOrderError` — **typed arms**, narrowed on `err.payload.kind`
-- **Error arms**: `"error400"` [400] no body · `"error422"` [422] no body · `"errorDefault"` [400–599] no body · `"undeclared"` [any other] `rawBody: ArrayBuffer`
+- **Error**: `SwaggerPetstoreOpenApi30Error` with `kind: "api"`, an instance of `Store.PlaceOrderError` — **typed arms**, narrowed on `err.payload.kind`
+- **Error arms**: `"error400"` [400] no body · `"error422"` [422] no body · `"errorDefault"` [default — any status no arm above covers] no body · `"undeclared"` [a `default`-matched response that carried a body] `rawBody: ArrayBuffer`
 
 **Fields** — `Store.PlaceOrderRequest` (6):
 

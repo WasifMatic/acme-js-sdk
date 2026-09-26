@@ -9,9 +9,9 @@ import type {
 } from "./credentials.js";
 import { PkceMethod } from "./credentials.js";
 import { base64, basicCredential, noneAuth } from "./schemes.js";
-import { AuthError, CoreError } from "../errors.js";
-import { ResponseError } from "../response-error.js";
-import { buildUrl } from "../url.js";
+import { CoreError } from "../errors.js";
+import { ApiError } from "../api-error.js";
+import { applyQuery, resolveUri } from "../url.js";
 import * as s from "../validation/index.js";
 
 /**
@@ -187,20 +187,15 @@ export function oauth2AuthorizationCodeStrategy(config: {
     async getToken(credentials, signal) {
       const method = credentials.pkce === undefined ? PkceMethod.S256 : credentials.pkce;
       if (method === null && (credentials.clientSecret === undefined || credentials.clientSecret === "")) {
-        throw new AuthError({
-          message:
-            "A client secret is required when PKCE is disabled. Set pkce to PkceMethod.S256 for a public client.",
-        });
+        throw new Error(
+          "A client secret is required when PKCE is disabled. Set pkce to PkceMethod.S256 for a public client.",
+        );
       }
 
       const pkce = method === null ? undefined : await generatePkce(method);
-      const authorizationUrl = buildUrl(
-        config.authorizationUrl,
-        undefined,
-        authorizationFields(credentials, pkce),
-        [],
-      ).href;
-      const code = await promptForCode(credentials, authorizationUrl, signal);
+      const authorizationUri = resolveUri(config.authorizationUrl, undefined);
+      applyQuery(authorizationUri, authorizationFields(credentials, pkce), []);
+      const code = await promptForCode(credentials, authorizationUri.href, signal);
       const placed = placementOf(credentials);
 
       return requestToken(
@@ -223,7 +218,7 @@ export function oauth2AuthorizationCodeStrategy(config: {
     async tryRefreshToken(credentials, refreshToken, signal) {
       const placed = placementOf(credentials);
       const outcome = await config.rawClient
-        .execute<OAuthTokenRefreshable, ResponseError>(
+        .execute<OAuthTokenRefreshable, ApiError>(
           {
             method: "POST",
             url: config.tokenUrl,
@@ -240,7 +235,7 @@ export function oauth2AuthorizationCodeStrategy(config: {
           },
           {
             success: { kind: "json", schema: oauthTokenRefreshableSchema },
-            errorFactory: ResponseError,
+            errorFactory: ApiError,
           },
           { signal },
         )
@@ -288,25 +283,20 @@ async function requestToken<T>(
   fields: readonly StyledParam[],
   signal: AbortSignal,
 ): Promise<T> {
-  try {
-    return await config.rawClient.execute<T, ResponseError>(
-      {
-        method: "POST",
-        url: config.tokenUrl,
-        auth: noneAuth,
-        headers: [...headers],
-        body: { kind: "formUrlEncoded", value: [...fields] },
-      },
-      {
-        success: { kind: "json", schema },
-        errorFactory: ResponseError,
-      },
-      { signal },
-    );
-  } catch (err) {
-    if (err instanceof CoreError) throw err;
-    throw new AuthError({ message: "The OAuth2 token request failed.", cause: err });
-  }
+  return config.rawClient.execute<T, ApiError>(
+    {
+      method: "POST",
+      url: config.tokenUrl,
+      auth: noneAuth,
+      headers: [...headers],
+      body: { kind: "formUrlEncoded", value: [...fields] },
+    },
+    {
+      success: { kind: "json", schema },
+      errorFactory: ApiError,
+    },
+    { signal },
+  );
 }
 
 async function promptForCode(
@@ -317,9 +307,8 @@ async function promptForCode(
   try {
     return await credentials.promptForAuthorizationCode(authorizationUrl, signal);
   } catch (err) {
-    if (err instanceof CoreError) throw err;
-    if (signal.aborted) throw signal.reason;
-    throw new AuthError({ message: "The authorization prompt failed.", cause: err });
+    if (!(err instanceof CoreError) && signal.aborted) throw signal.reason;
+    throw err;
   }
 }
 

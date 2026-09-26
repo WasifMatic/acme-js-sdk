@@ -5,8 +5,9 @@ import { percentEncode } from "./params.js";
 export function buildHeaders(
   headersByPrecedence: ReadonlyArray<readonly Param[] | undefined>,
   cookies?: readonly Param[],
+  into?: Headers,
 ): Headers {
-  const headers = new Headers();
+  const headers = into ?? new Headers();
   for (const contributed of headersByPrecedence) {
     for (const header of contributed ?? []) {
       const value = encodedParam(header);
