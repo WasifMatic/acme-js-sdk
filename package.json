@@ -1,7 +1,16 @@
 {
   "name": "automated-package-publishing",
   "version": "1.0.26",
-  "description": "This is a sample Pet Store Server based on the OpenAPI 3.0 specification.  You can find out more about\nSwagger at [https://swagger.io](https://swagger.io). In the third iteration of the pet store, we've switched to the design first approach!\nYou can now help us improve the API whether it's by making changes to the definition itself or to the code.\nThat way, with time, we can improve the API in general, and expose some of the new features in OAS3.\n\nSome useful links:\n- [The Pet Store repository](https://github.com/swagger-api/swagger-petstore)\n- [The source API definition for the Pet Store](https://github.com/swagger-api/swagger-petstore/blob/master/src/main/resources/openapi.yaml)",
+  "description": "ihfeihiqhfpiwqhifihfwihf",
+  "keywords": [
+    "Acen",
+    "eopr"
+  ],
+  "homepage": "https://fjifj.com",
+  "bugs": {
+    "url": "https://fjifj.com",
+    "email": "sisiy21208@kingdais.com"
+  },
   "type": "module",
   "exports": {
     ".": {
@@ -57,8 +66,17 @@
   },
   "license": "MIT",
   "author": {
-    "name": "CLI User"
+    "name": "CLI User",
+    "email": "sisiy21208@kingdais.com",
+    "url": "https://fjifj.com"
   },
+  "contributors": [
+    {
+      "name": "ouhfw",
+      "email": "sisiy21208@kingdais.com",
+      "url": "https://fjifj.com"
+    }
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/WasifMatic/acme-js-sdk.git"
