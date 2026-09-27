@@ -7,10 +7,10 @@
 |  |  |
 | --- | --- |
 | SDK display name | Swagger Petstore - OpenAPI 3.0 |
-| Package | `swagger-petstore-open-api-3-0` |
+| Package | `automated-package-publishing` |
 | Package version | `1.0.26` |
 | API spec version | `1.0.26` |
-| Import specifier | `swagger-petstore-open-api-3-0` — the package root is the **only** entry. Deep imports (`swagger-petstore-open-api-3-0/models/...`) do not resolve; the `exports` map exposes `.` and `./package.json` and nothing else |
+| Import specifier | `automated-package-publishing` — the package root is the **only** entry. Deep imports (`automated-package-publishing/models/...`) do not resolve; the `exports` map exposes `.` and `./package.json` and nothing else |
 | Module format | dual ESM + CommonJS, as folder dialects (`dist/esm`, `dist/commonjs`), each with its own `package.json` marker. No `.mjs`, `.cjs`, `.d.mts` or `.d.cts` files exist |
 | Node floor | `>=20` (`engines.node`) |
 | TypeScript floor | a resolver that reads `exports` (4.7+), plus whatever the pinned `zod` requires — `zod@4` needs 5.5 or later. The public `.d.ts` chain reaches `zod/v4-mini`, so this is a real constraint rather than a build-tool version |
@@ -19,14 +19,14 @@
 
 Staleness check: the API spec version above changes when the SDK is regenerated from a new spec. If a lookup here fails to compile, trust the compiler and re-read the source file named in the row.
 
-All `Source` paths on this map and its sub-pages are relative to the **SDK root** — the directory holding this file and `package.json` — never to the page that carries them: a page two directories deep writes exactly what a page at the root would. The package ships its `src/` tree, so the same paths resolve inside `node_modules/swagger-petstore-open-api-3-0/` too. An import specifier ending `.js` inside that source is the NodeNext spelling of the sibling `.ts` file.
+All `Source` paths on this map and its sub-pages are relative to the **SDK root** — the directory holding this file and `package.json` — never to the page that carries them: a page two directories deep writes exactly what a page at the root would. The package ships its `src/` tree, so the same paths resolve inside `node_modules/automated-package-publishing/` too. An import specifier ending `.js` inside that source is the NodeNext spelling of the sibling `.ts` file.
 
 ---
 
 ## Getting a client
 
 ```ts
-import { SwaggerPetstoreOpenApi30Client } from "swagger-petstore-open-api-3-0";
+import { SwaggerPetstoreOpenApi30Client } from "automated-package-publishing";
 
 const client = new SwaggerPetstoreOpenApi30Client({
   petstoreAuth: "YOUR_API_KEY",
@@ -242,7 +242,7 @@ Conventions: every model is a plain `type`, not a class — build one with an ob
 Every name comes from the package root — there is no default export, and no deep imports:
 
 ```ts
-import { type ApiResponse, apiResponseSchema } from "swagger-petstore-open-api-3-0";
+import { type ApiResponse, apiResponseSchema } from "automated-package-publishing";
 ```
 
 ---
@@ -285,7 +285,7 @@ The facts that change what you type, and the floors that decide whether the pack
 
 |  |  |
 | --- | --- |
-| One entry, two dialects | `import` resolves `dist/esm`, `require` resolves `dist/commonjs`, both through the single `.` export. In a TypeScript CommonJS file the typed spelling is `import sdk = require("swagger-petstore-open-api-3-0")`; a plain `require` destructure works at run time but yields no types. `instanceof` is reliable **within** one dialect — if your app loads both, the two copies declare separate error classes |
+| One entry, two dialects | `import` resolves `dist/esm`, `require` resolves `dist/commonjs`, both through the single `.` export. In a TypeScript CommonJS file the typed spelling is `import sdk = require("automated-package-publishing")`; a plain `require` destructure works at run time but yields no types. `instanceof` is reliable **within** one dialect — if your app loads both, the two copies declare separate error classes |
 | Consumer compiler settings | Under `exactOptionalPropertyTypes`, **omit or spread** an absent optional rather than assigning `undefined` to it. Under `verbatimModuleSyntax`, names that carry no runtime value (the options types, every model type) must be imported with `import type` |
 | Required globals, and only these | Always: `fetch` (or a replacement passed as the `fetch` option), `AbortController`, `Headers`, `URL`, `setTimeout` and `clearTimeout`, `JSON`, `BigInt`. `crypto.randomUUID` or `crypto.getRandomValues` mints the `Idempotency-Key` a non-GET call carries — **read and never required**, since a runtime offering neither fills the bytes from `Math.random` mixed with the clock and a per-process counter, so the header is always sent. Three more are **read and never required** — `process`, `navigator` and `EdgeRuntime`, which name the host in `X-APIMatic-OS` and `X-APIMatic-Runtime`. A runtime offering none of them sends neither header and works unchanged. |
 | Values that cross the boundary | `Date` for `date-time`, `string` for `date`, `ArrayBuffer` for an undeclared error body, `Headers` on a result and on a thrown `ResponseError`. The engine also carries a `bigint` int64 path and a base64 `bytes()` codec, reached only where a model uses them |

@@ -4,7 +4,7 @@
 
 Accessor: `client.userApi` · Source: `src/resources/user-api.ts` · 7 operations · Request and error types: namespace `UserApi`
 
-**Type sources**: every type an operation names, with the file that declares it and the schema value exported beside it. Import every name from `swagger-petstore-open-api-3-0`; the `Source` path is where to **read** the shape, never what to import. `ApiError`, the runtime error family and the file vocabulary are excluded — see sdk-map.md.
+**Type sources**: every type an operation names, with the file that declares it and the schema value exported beside it. Import every name from `automated-package-publishing`; the `Source` path is where to **read** the shape, never what to import. `ApiError`, the runtime error family and the file vocabulary are excluded — see sdk-map.md.
 
 ### createUser
 

@@ -20,7 +20,13 @@ Some useful links:
 
 ## Installation
 
-The SDK compiles to `dist/` before it can be referenced — run its `build` script once in the SDK folder, then add it to your project by path:
+Once the package is published, add the SDK to your project from npm:
+
+```bash
+npm install automated-package-publishing
+```
+
+To install from the SDK source instead, compile it to `dist/` — run its `build` script once in the SDK folder — then add it to your project by path:
 
 ```bash
 npm install <path-to-sdk>
@@ -33,7 +39,7 @@ npm install <path-to-sdk>
 Create one client and reuse it. Configure its behaviour through [ClientOptions](src/client-options.ts).
 
 ```ts
-import { SwaggerPetstoreOpenApi30Client } from "swagger-petstore-open-api-3-0";
+import { SwaggerPetstoreOpenApi30Client } from "automated-package-publishing";
 
 const client = new SwaggerPetstoreOpenApi30Client({
   petstoreAuth: "YOUR_API_KEY",
@@ -48,7 +54,7 @@ Nothing in `ClientOptions` is required — `new SwaggerPetstoreOpenApi30Client()
 The package ships both dialects from a single entry, so `require` works with full types. In a TypeScript CommonJS file use the `import ... = require(...)` form — a plain destructuring `require` runs fine but gives you `any`.
 
 ```ts
-import sdk = require("swagger-petstore-open-api-3-0");
+import sdk = require("automated-package-publishing");
 
 const client = new sdk.SwaggerPetstoreOpenApi30Client({
   petstoreAuth: "YOUR_API_KEY",
