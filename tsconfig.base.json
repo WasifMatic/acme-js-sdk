@@ -1,11 +1,10 @@
 {
   "include": ["src", "types"],
   "compilerOptions": {
-    "module": "esnext",
-    "lib": ["esnext"],
     "skipLibCheck": true,
     "importHelpers": true,
     "declaration": true,
+    "declarationMap": true,
     "sourceMap": true,
     "rootDir": "./src",
     "strict": true,
@@ -14,8 +13,8 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "moduleResolution": "node",
-    "target": "ES2017", 
     "jsx": "react",
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "useUnknownInCatchVariables": false
   }
 }

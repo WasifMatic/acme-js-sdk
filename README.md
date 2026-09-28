@@ -1,11 +1,7 @@
-# Swagger Petstore - OpenAPI 3.0
 
-[![Built with APIMatic][apimatic-badge]][apimatic-url] [![License: MIT][license-badge]][license-url]
+# Getting Started with Swagger Petstore - OpenAPI 3.0
 
-The Swagger Petstore - OpenAPI 3.0 SDK for TypeScript provides typed access to the [Swagger Petstore - OpenAPI 3.0 REST APIs](https://swagger.io) from Node.js and the browser.
-
-> [!TIP]
-> **Looking for a specific signature, request field, model, enum or error type?** This SDK ships a generated, machine-readable **[SDK map](sdk-map.md)** — a lookup index of the whole TypeScript surface. Consult it **before** grepping or scanning the source tree; it answers most contract questions directly and, where a source file is genuinely needed, names the exact one to open. Details under [SDK map](#sdk-map).
+## Introduction
 
 This is a sample Pet Store Server based on the OpenAPI 3.0 specification.  You can find out more about
 Swagger at [https://swagger.io](https://swagger.io). In the third iteration of the pet store, we've switched to the design first approach!
@@ -13,102 +9,160 @@ You can now help us improve the API whether it's by making changes to the defini
 That way, with time, we can improve the API in general, and expose some of the new features in OAS3.
 
 Some useful links:
+
 - [The Pet Store repository](https://github.com/swagger-api/swagger-petstore)
 - [The source API definition for the Pet Store](https://github.com/swagger-api/swagger-petstore/blob/master/src/main/resources/openapi.yaml)
 
----
+Find out more about Swagger: [https://swagger.io](https://swagger.io)
 
-## Installation
+## Install the Package
 
-Once the package is published, add the SDK to your project from npm:
-
-```bash
-npm install automated-package-publishing
-```
-
-To install from the SDK source instead, compile it to `dist/` — run its `build` script once in the SDK folder — then add it to your project by path:
+Run the following command from your project directory to install the package from npm:
 
 ```bash
-npm install <path-to-sdk>
+npm install automated-package-publishing@4.0.1
 ```
 
----
+For additional package details, see the [Npm page for the automated-package-publishing@4.0.1 npm](https://www.npmjs.com/package/automated-package-publishing/v/4.0.1).
 
-## Quick Start
+## Initialize the API Client
 
-Create one client and reuse it. Configure its behaviour through [ClientOptions](src/client-options.ts).
+**_Note:_** Documentation for the client can be found [here.](doc/client.md)
+
+The following parameters are configurable for the API Client:
+
+| Parameter | Type | Description |
+|  --- | --- | --- |
+| environment | [`Environment`](README.md#environments) | The API environment. <br> **Default: `Environment.Production`** |
+| timeout | `number` | Timeout for API calls.<br>*Default*: `30000` |
+| httpClientOptions | [`Partial<HttpClientOptions>`](doc/http-client-options.md) | Stable configurable http client options. |
+| unstableHttpClientOptions | `any` | Unstable configurable http client options. |
+| logging | [`PartialLoggingOptions`](doc/partial-logging-options.md) | Logging Configuration to enable logging |
+| petstoreAuthCredentials | [`PetstoreAuthCredentials`](doc/auth/oauth-2-implicit-grant.md) | The credential object for petstoreAuth |
+| apiKeyCredentials | [`ApiKeyCredentials`](doc/auth/custom-header-signature.md) | The credential object for apiKey |
+
+The API client can be initialized as follows:
+
+### Code-Based Client Initialization
 
 ```ts
-import { SwaggerPetstoreOpenApi30Client } from "automated-package-publishing";
+import {
+  Client,
+  Environment,
+  LogLevel,
+  OauthScopePetstoreAuth,
+} from 'automated-package-publishing';
 
-const client = new SwaggerPetstoreOpenApi30Client({
-  petstoreAuth: "YOUR_API_KEY",
-  apiKey: "YOUR_API_KEY",
+const client = new Client({
+  petstoreAuthCredentials: {
+    oauthClientId: 'OAuthClientId',
+    oauthRedirectUri: 'OAuthRedirectUri',
+    oauthScopes: [
+      OauthScopePetstoreAuth.Writepets,
+      OauthScopePetstoreAuth.Readpets
+    ]
+  },
+  apiKeyCredentials: {
+    'api_key': 'api_key'
+  },
+  timeout: 30000,
+  environment: Environment.Production,
+  logging: {
+    logLevel: LogLevel.Info,
+    logRequest: {
+      logBody: true
+    },
+    logResponse: {
+      logHeaders: true
+    }
+  },
 });
 ```
 
-Nothing in `ClientOptions` is required — `new SwaggerPetstoreOpenApi30Client()` compiles — and each option left out falls back to its default. This API declares one environment, so there is no environment to select and no host to state at the construction site.
-
-### From CommonJS
-
-The package ships both dialects from a single entry, so `require` works with full types. In a TypeScript CommonJS file use the `import ... = require(...)` form — a plain destructuring `require` runs fine but gives you `any`.
+### Configuration-Based Client Initialization
 
 ```ts
-import sdk = require("automated-package-publishing");
+import * as path from 'path';
+import * as fs from 'fs';
+import { Client } from 'automated-package-publishing';
 
-const client = new sdk.SwaggerPetstoreOpenApi30Client({
-  petstoreAuth: "YOUR_API_KEY",
-  apiKey: "YOUR_API_KEY",
-});
+// Provide absolute path for the configuration file
+const absolutePath = path.resolve('./config.json');
+
+// Read the configuration file content
+const fileContent = fs.readFileSync(absolutePath, 'utf-8');
+
+// Initialize client from JSON configuration content
+const client = Client.fromJsonConfig(fileContent);
 ```
 
----
+See the [Configuration-Based Client Initialization](doc/configuration-based-client-initialization.md) section for details.
 
-## Usage
+### Environment-Based Client Initialization
 
-For code examples and error responses, see [API Reference](api-reference.md).
+```ts
+import * as dotenv from 'dotenv';
+import * as path from 'path';
+import * as fs from 'fs';
+import { Client } from 'automated-package-publishing';
 
----
+// Optional - Provide absolute path for the .env file
+const absolutePath = path.resolve('./.env');
 
-## SDK map
+if (fs.existsSync(absolutePath)) {
+  // Load environment variables from .env file
+  dotenv.config({ path: absolutePath, override: true });
+}
 
-This SDK ships a generated **SDK map** — [`sdk-map.md`](sdk-map.md) plus the pages under [`map/operations/`](map/operations/pet-api.md) — a deterministic, lookup-oriented table of contents of the TypeScript surface, generated alongside the SDK.
+// Initialize client using environment variables
+const client = Client.fromEnvironment(process.env);
+```
 
-**Read it before scanning the source.** Whether you are an AI coding assistant or searching by hand, the map answers "what is the exact …" by lookup for every call-level contract, and for anything it does not carry it names the one file that does:
+See the [Environment-Based Client Initialization](doc/environment-based-client-initialization.md) section for details.
 
-- **[`sdk-map.md`](sdk-map.md)** — the index: client construction, the one error family, the non-throwing `.asApiResult()` form, servers, environments and auth, the model locator, the runtime facts, and the SDK-wide defaults every operation relies on.
-- **[`map/operations/`](map/operations/pet-api.md)** — one page per resource: the exact signature and return type, the verb and route, the request body and its media type, a **Fields** table giving every request field its channel, and a **Type sources** table naming the file and schema value of every type the operation mentions.
+## Environments
 
-Model shapes — object properties with their wire names, enum member names and wire values, union variants — are **not** duplicated in the map, and not in the API reference either. Both name the type and the file to read; take the pair from the operation's **Type sources** table and read the declaring file. That file is the single source of truth and cannot go stale against the code.
+The SDK can be configured to use a different environment for making API calls. Available environments are:
 
-**Each operation block states only what is specific to it.** The SDK-wide defaults are stated once in [`sdk-map.md`](sdk-map.md) — the call shape, the base `ApiError`, the default server group — and a block departs from one only by saying so, so a block silent on a point is telling you the default applies. Take it and move on rather than opening the source to confirm.
+### Fields
 
-### Which one to reach for
+| Name | Description |
+|  --- | --- |
+| Production | **Default** |
 
-The map and the [API reference](api-reference.md) answer different questions, and both are generated from this SDK so they stay in lockstep with the code.
+## Authorization
 
-| Use | For |
-| --- | --- |
-| **[`sdk-map.md`](sdk-map.md) + [`map/operations/`](map/operations/pet-api.md)** | Traversing the SDK and working out its surface — locating the operation you need (this SDK exposes **19 operations**), its exact signature, which credential it sends, which channel every request field travels on, which error type it rejects with and how to read it, and the file behind any type. This is the index to consume the SDK from, and the one to reach for first. |
-| **[`api-reference.md`](api-reference.md)** | Usage guidance for a single operation once you know which one you want — a code sample for each of the two call forms (awaiting it, and the non-throwing `.asApiResult()`), per-parameter descriptions, and the success and error types it resolves or rejects with. |
+This API uses the following authentication schemes.
 
----
+* [`petstore_auth (OAuth 2 Implicit Grant)`](doc/auth/oauth-2-implicit-grant.md)
+* [`api_key (Custom Header Signature)`](doc/auth/custom-header-signature.md)
 
-## License
+## List of APIs
 
-This SDK is distributed under the [MIT License](LICENSE).
+* [Pet](doc/controllers/pet.md)
+* [Store](doc/controllers/store.md)
+* [User](doc/controllers/user.md)
 
----
+## SDK Infrastructure
 
-## Support
+### Configuration
 
-Refer to the [API reference](api-reference.md) for detailed information on available operations with code samples.
+* [HttpClientOptions](doc/http-client-options.md)
+* [RetryConfiguration](doc/retry-configuration.md)
+* [ProxySettings](doc/proxy-settings.md)
+* [Configuration-Based Client Initialization](doc/configuration-based-client-initialization.md)
+* [Environment-Based Client Initialization](doc/environment-based-client-initialization.md)
+* [PartialLoggingOptions](doc/partial-logging-options.md)
+* [PartialRequestLoggingOptions](doc/partial-request-logging-options.md)
+* [PartialResponseLoggingOptions](doc/partial-response-logging-options.md)
+* [LoggerInterface](doc/logger-interface.md)
 
-For further assistance, please contact support at apiteam@swagger.io.
+### HTTP
 
----
+* [HttpRequest](doc/http-request.md)
 
-[license-url]: LICENSE
-[license-badge]: https://img.shields.io/badge/License-MIT-blue.svg
-[apimatic-url]: https://www.apimatic.io
-[apimatic-badge]: https://www.apimatic.io/hubfs/Built-with-APIMatic-badge.svg
+### Utilities
+
+* [ApiResponse](doc/api-response.md)
+* [ApiError](doc/api-error.md)
+

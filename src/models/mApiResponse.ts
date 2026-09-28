@@ -5,7 +5,7 @@
  */
 
 import {
-  bigint,
+  number,
   optional,
   Schema,
   string,
@@ -13,14 +13,19 @@ import {
   unknown,
 } from '../schema.js';
 
-export interface Tag {
-  id?: bigint;
-  name?: string;
+export interface MApiResponse {
+  code?: number;
+  type?: string;
+  message?: string;
   additionalProperties?: Record<string, unknown>;
 }
 
-export const tagSchema: Schema<Tag> = typedExpandoObject(
-  { id: ['id', optional(bigint())], name: ['name', optional(string())] },
+export const mApiResponseSchema: Schema<MApiResponse> = typedExpandoObject(
+  {
+    code: ['code', optional(number())],
+    type: ['type', optional(string())],
+    message: ['message', optional(string())],
+  },
   'additionalProperties',
   optional(unknown())
 );
